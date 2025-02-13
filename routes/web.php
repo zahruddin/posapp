@@ -2,7 +2,10 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Auth\LoginController;
-use App\Http\Controllers\DashboardController;
+use App\Http\Controllers;
+use App\Http\Controllers\Admin;
+use App\Http\Controllers\Kasir;
+// use App\Http\Controllers\Admin\DashboardController;
 use Illuminate\Support\Facades\Auth;
 
 /*
@@ -24,16 +27,17 @@ Route::get('/login', [LoginController::class, 'showLoginForm'])->name('login'); 
 Route::post('/login', [LoginController::class, 'login']); // Proses login
 
 // logout
-Route::get('/logout', function () {
+Route::post('/logout', function () {
     Auth::logout();  // Menjalankan proses logout
     return redirect()->route('login');  // Mengarahkan pengguna ke halaman login setelah logout
 })->name('logout');
 
 Route::middleware(['auth', 'role:admin'])->group(function () {
-    Route::get('/admin/dashboard', [DashboardController::class, 'adminDashboard'])->name('admin.dashboard');
-    
+    Route::get('/admin', function() { return redirect()->route('admin.dashboard'); })->name('redirect.admin.dashboard'); 
+    Route::get('/admin/dashboard', [Admin\DashboardController::class, 'showDashboard'])->name('admin.dashboard'); 
 });
 
 Route::middleware(['auth', 'role:kasir'])->group(function () {
-    Route::get('/kasir/dashboard', [DashboardController::class, 'kasirDashboard'])->name('kasir.dashboard');
+    Route::get('/kasir', function() { return redirect()->route('kasir.dashboard'); })->name('redirect.kasir.dashboard'); 
+    Route::get('/kasir/dashboard', [Kasir\DashboardController::class, 'showDashboard'])->name('kasir.dashboard');
 });

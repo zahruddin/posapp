@@ -41,40 +41,37 @@ class LoginController extends Controller
             'password' => 'required|string',
         ]);
 
-        // Mencari user berdasarkan username atau email
-        $credentials = $request->only('username_or_email', 'password');
-
         // Menemukan user berdasarkan username atau email
-        $user = User::where('username', $credentials['username_or_email'])
-                    ->orWhere('email', $credentials['username_or_email'])
+        $user = User::where('username', $request->username_or_email)
+                    ->orWhere('email', $request->username_or_email)
                     ->first();
 
-        // Jika user ditemukan dan password cocok
-        if ($user && Auth::attempt([
-            'username' => $credentials['username_or_email'], 
-            'password' => $credentials['password']
-        ]) || $user && Auth::attempt([
-            'email' => $credentials['username_or_email'], 
-            'password' => $credentials['password']
-        ])) {
-            // Setelah login berhasil, arahkan berdasarkan role pengguna
-            if ($user->role == 'admin') {
-                // Arahkan ke dashboard admin
-                return redirect()->route('admin.dashboard');
-            } elseif ($user->role == 'kasir') {
-                // Arahkan ke dashboard kasir
-                return redirect()->route('kasir.dashboard');
+        if ($user) {
+            $remember = $request->has('remember'); // Ambil status remember
+
+            // Coba login dengan username atau email
+            if (Auth::attempt(['username' => $request->username_or_email, 'password' => $request->password], $remember) ||
+                Auth::attempt(['email' => $request->username_or_email, 'password' => $request->password], $remember)) {
+
+                // Redirect sesuai role
+                return $user->role == 'admin' ? redirect()->route('admin.dashboard') 
+                    : redirect()->route('kasir.dashboard');
             }
         }
 
         // Jika login gagal
-        return back()->withErrors(['message' => 'Login failed']);
+        return back()->withErrors(['message' => 'Email/Username atau Password salah!'])->withInput();
     }
 
     // Proses logout
-    public function logout()
+    public function logout(Request $request)
     {
-        Auth::logout();
-        return redirect()->route('login'); // Arahkan kembali ke halaman login
+        Auth::logout(); // Logout pengguna
+
+        $request->session()->invalidate(); // Hapus sesi
+        $request->session()->regenerateToken(); // Regenerasi token CSRF
+
+        return redirect('/login');
     }
+
 }
