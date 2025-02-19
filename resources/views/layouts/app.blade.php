@@ -42,7 +42,7 @@
         />
         <!--end::Third Party Plugin(Bootstrap Icons)-->
         <!--begin::Required Plugin(AdminLTE)-->
-        <link rel="stylesheet" href="../../dist/css/adminlte.css" />
+        <link rel="stylesheet" href="{{ asset('dist/css/adminlte.css') }}" />
         <!--end::Required Plugin(AdminLTE)-->
         <!-- apexcharts -->
         <link
@@ -58,6 +58,8 @@
         integrity="sha256-+uGLJmmTKOqBr+2E6KDYs/NRsHxSkONXFHUL0fy2O/4="
         crossorigin="anonymous"
         />
+        <!-- CSS Bootstrap -->
+        <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet">
     </head>
     <!--end::Head-->
     <!--begin::Body-->
@@ -100,7 +102,7 @@
                         <div class="d-flex">
                             <div class="flex-shrink-0">
                             <img
-                                src="../../dist/assets/img/user1-128x128.jpg"
+                                src="{{ asset('dist/assets/img/user1-128x128.jpg') }}"
                                 alt="User Avatar"
                                 class="img-size-50 rounded-circle me-3"
                             />
@@ -126,7 +128,7 @@
                         <div class="d-flex">
                             <div class="flex-shrink-0">
                             <img
-                                src="../../dist/assets/img/user8-128x128.jpg"
+                                src="{{ asset('dist/assets/img/user8-128x128.jpg')}}"
                                 alt="User Avatar"
                                 class="img-size-50 rounded-circle me-3"
                             />
@@ -152,7 +154,7 @@
                         <div class="d-flex">
                             <div class="flex-shrink-0">
                             <img
-                                src="../../dist/assets/img/user3-128x128.jpg"
+                                src="{{ asset('dist/assets/img/user3-128x128.jpg')}}"
                                 alt="User Avatar"
                                 class="img-size-50 rounded-circle me-3"
                             />
@@ -217,7 +219,7 @@
                     <li class="nav-item dropdown user-menu">
                     <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">
                         <img
-                        src="../../dist/assets/img/user2-160x160.jpg"
+                        src="{{ asset('dist/assets/img/user2-160x160.jpg')}}"
                         class="user-image rounded-circle shadow"
                         alt="User Image"
                         />
@@ -227,7 +229,7 @@
                         <!--begin::User Image-->
                         <li class="user-header text-bg-primary">
                         <img
-                            src="../../dist/assets/img/user2-160x160.jpg"
+                            src="{{ asset('dist/assets/img/user2-160x160.jpg')}}"
                             class="rounded-circle shadow"
                             alt="User Image"
                         />
@@ -274,7 +276,7 @@
                 <a href="./index.html" class="brand-link">
                     <!--begin::Brand Image-->
                     <img
-                    src="../../dist/assets/img/AdminLTELogo.png"
+                    src="{{ asset('dist/assets/img/AdminLTELogo.png') }}"
                     alt="AdminLTE Logo"
                     class="brand-image opacity-75 shadow"
                     />
@@ -298,13 +300,28 @@
                     >
                     <!-- Menu untuk Admin -->
                     @if(Auth::user()->role == 'admin')
-                        <li class="nav-item">
-                            <a href="#" class="nav-link active">
-                            <i class="nav-icon bi bi-speedometer"></i>
-                            <p>
-                                Dashboard
-                                <i class="nav-arrow bi bi-chevron-right"></i>
-                            </p>
+                        <li class="nav-item {{ request()->routeIs('admin.dashboard') ? 'active' : '' }}">
+                            <a href="{{ route('admin.dashboard') }}" class="nav-link {{ request()->routeIs('admin.dashboard') ? 'active' : '' }}">
+                                <i class="nav-icon bi bi-speedometer"></i>
+                                    <p>
+                                        Dashboard
+                                    </p>
+                            </a>
+                        </li>
+                        <li class="nav-item {{ request()->routeIs('admin.kelolaOutlet') ? 'active' : '' }}">
+                            <a href="{{ route('admin.kelolaOutlet') }}" class="nav-link {{ request()->routeIs('admin.kelolaOutlet') ? 'active' : '' }}">
+                                <i class="nav-icon bi bi-shop"></i>
+                                    <p>
+                                        Kelola Outlet
+                                    </p>
+                            </a>
+                        </li>
+                        <li class="nav-item {{ request()->routeIs('admin.kelolaUsers') ? 'active' : '' }}">
+                            <a href="{{ route('admin.kelolaUsers') }}" class="nav-link {{ request()->routeIs('admin.kelolaUsers') ? 'active' : '' }}">
+                                <i class="nav-icon bi bi-people"></i>
+                                    <p>
+                                        Kelola Users
+                                    </p>
                             </a>
                         </li>
                         <li class="nav-item">
@@ -411,6 +428,24 @@
             <!--end::Sidebar-->
             <!--begin::App Main-->
             <main class="app-main">
+                <!--begin::App Content Header-->
+                <div class="app-content-header">
+                    <!--begin::Container-->
+                    <div class="container-fluid">
+                    <!--begin::Row-->
+                    <div class="row">
+                        <div class="col-sm-6"><h3 class="mb-0">@yield('page', 'Dashboard')</h3></div>
+                        <div class="col-sm-6">
+                        <ol class="breadcrumb float-sm-end bg-transparent ">
+                            <li class="breadcrumb-item"><a href="">Home</a></li>
+                            <li class="breadcrumb-item active" aria-current="page">@yield('page', 'Dashboard')</li>
+                        </ol>
+                        </div>
+                    </div>
+                    <!--end::Row-->
+                    </div>
+                    <!--end::Container-->
+                </div>
                 @yield('content')
             </main>
             <!--end::App Main-->
@@ -433,6 +468,7 @@
 
         <!--begin::Script-->
         <!--begin::Third Party Plugin(OverlayScrollbars)-->
+        <script src="{{ asset('dist/js/adminlte.js') }}"></script>
         <script
             src="https://cdn.jsdelivr.net/npm/overlayscrollbars@2.10.1/browser/overlayscrollbars.browser.es6.min.js"
             integrity="sha256-dghWARbRe2eLlIJ56wNB+b760ywulqK3DzZYEpsg2fQ="
@@ -451,7 +487,6 @@
             crossorigin="anonymous"
         ></script>
         <!--end::Required Plugin(Bootstrap 5)--><!--begin::Required Plugin(AdminLTE)-->
-        <script src="../../dist/js/adminlte.js"></script>
         <!--end::Required Plugin(AdminLTE)--><!--begin::OverlayScrollbars Configure-->
         <script>
             const SELECTOR_SIDEBAR_WRAPPER = '.sidebar-wrapper';
@@ -679,6 +714,9 @@
             const sparkline3 = new ApexCharts(document.querySelector('#sparkline-3'), option_sparkline3);
             sparkline3.render();
         </script>
+        <!-- JS Bootstrap -->
+        <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+        <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.bundle.min.js"></script>
         <!--end::Script-->
     </body>
 <!--end::Body-->
