@@ -39,9 +39,15 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
     // Outlet
     Route::get('/admin/kelolaOutlet', [Admin\KelolaOutletController::class, 'showKelolaOutlet'])->name('admin.kelolaOutlet'); 
     Route::get('/admin/kelolaOutlet/{id}/dashboard', [Admin\DashboardController::class, 'showDashboard'])->name('admin.dashboardOutlet');
-    // Users
-    Route::get('/admin/kelolaUsers', [Admin\DashboardController::class, 'showDashboard'])->name('admin.kelolaUsers'); 
-    Route::post('/admin/kelolaUsers/tambah', [Admin\KelolaOutletController::class, 'tambahOutlet'])->name('admin.tambahOutlet');
+    Route::post('/admin/kelolaOutlet/tambahoutlet', [Admin\KelolaOutletController::class, 'tambahOutlet'])->name('admin.tambahOutlet');
+    // Outlet Produk
+    Route::get('/admin/kelolaOutlet/produk', [Admin\KelolaOutletController::class, 'showProduk'])->name('admin.outlet.produk');
+    Route::post('/admin/kelolaOutlet/tambahproduk', [Admin\KelolaOutletController::class, 'tambahProduk'])->name('admin.outlet.tambahProduk');
+    // outlet Users
+    Route::get('/admin/kelolaUsers', [Admin\KelolaUsersController::class, 'showUsers'])->name('admin.kelolaUsers'); 
+    Route::get('/admin/kelolaUsers/edit', [Admin\KelolaUsersController::class, 'showUsers'])->name('admin.editUser'); 
+    Route::post('/admin/kelolaUsers/hapususer/{id}', [Admin\KelolaUsersController::class, 'hapusUser'])->name('admin.deleteUser');
+    Route::post('/admin/kelolaUsers/tambahuser', [Admin\KelolaUsersController::class, 'tambahUser'])->name('admin.tambahUser'); 
 });
 
 Route::middleware(['auth', 'role:kasir'])->group(function () {

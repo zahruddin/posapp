@@ -18,6 +18,7 @@ class User extends Authenticatable
      * @var array<int, string>
      */
     protected $fillable = [
+        'id_outlet',
         'name',
         'username',
         'email',
@@ -59,4 +60,9 @@ class User extends Authenticatable
     }
 
     // Opsional, jika ingin menambahkan validasi atau atribut lain untuk keperluan login
+    public function outlet()
+    {
+        return $this->belongsTo(Outlet::class, 'id_outlet');
+    }
+
 }

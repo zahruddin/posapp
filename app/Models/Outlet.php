@@ -18,5 +18,9 @@ class Outlet extends Model
         'alamat_outlet',
     ];
 
-    protected $dates = ['deleted_at']; // Untuk soft delete
+    // Tambahkan relasi jika diperlukan
+    public function products()
+    {
+        return $this->hasMany(Product::class, 'id_outlet');
+    }
 }
