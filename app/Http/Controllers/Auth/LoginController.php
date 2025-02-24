@@ -41,27 +41,24 @@ class LoginController extends Controller
             'password' => 'required|string',
         ]);
 
-        // Menemukan user berdasarkan username atau email
-        $user = User::where('username', $request->username_or_email)
-                    ->orWhere('email', $request->username_or_email)
-                    ->first();
+        $remember = $request->has('remember'); // Ambil status remember me
 
-        if ($user) {
-            $remember = $request->has('remember'); // Ambil status remember
+        // Coba login dengan username atau email dalam satu percobaan saja
+        if (Auth::attempt(['username' => $request->username_or_email, 'password' => $request->password], $remember) ||
+            Auth::attempt(['email' => $request->username_or_email, 'password' => $request->password], $remember)) {
 
-            // Coba login dengan username atau email
-            if (Auth::attempt(['username' => $request->username_or_email, 'password' => $request->password], $remember) ||
-                Auth::attempt(['email' => $request->username_or_email, 'password' => $request->password], $remember)) {
+            // Ambil data user yang sedang login
+            $user = Auth::user();
 
-                // Redirect sesuai role
-                return $user->role == 'admin' ? redirect()->route('admin.dashboard') 
-                    : redirect()->route('kasir.dashboard');
-            }
+            // Redirect sesuai role
+            return $user->role == 'admin' ? redirect()->route('admin.dashboard') 
+                : redirect()->route('kasir.dashboard');
         }
 
         // Jika login gagal
         return back()->withErrors(['message' => 'Email/Username atau Password salah!'])->withInput();
     }
+
 
     // Proses logout
     public function logout(Request $request)

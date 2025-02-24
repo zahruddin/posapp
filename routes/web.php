@@ -37,13 +37,17 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
     Route::get('/admin', function() { return redirect()->route('admin.dashboard'); })->name('redirect.admin.dashboard'); 
     Route::get('/admin/dashboard', [Admin\DashboardController::class, 'showDashboard'])->name('admin.dashboard'); 
     // Outlet
-    Route::get('/admin/kelolaOutlet', [Admin\KelolaOutletController::class, 'showKelolaOutlet'])->name('admin.kelolaOutlet'); 
-    Route::get('/admin/kelolaOutlet/{id}/dashboard', [Admin\DashboardController::class, 'showDashboard'])->name('admin.dashboardOutlet');
-    Route::post('/admin/kelolaOutlet/tambahoutlet', [Admin\KelolaOutletController::class, 'tambahOutlet'])->name('admin.tambahOutlet');
+    Route::get('/admin/kelolaoutlet', [Admin\KelolaOutletController::class, 'showKelolaOutlet'])->name('admin.kelolaOutlet'); 
+    Route::get('/admin/kelolaoutlet/id/{id}', [Admin\DashboardController::class, 'showDashboard'])->name('admin.dashboardOutlet');
+    Route::post('/admin/kelolaoutlet/tambahoutlet', [Admin\KelolaOutletController::class, 'tambahOutlet'])->name('admin.tambahOutlet');
     // Outlet Produk
-    Route::get('/admin/kelolaOutlet/produk', [Admin\KelolaOutletController::class, 'showProduk'])->name('admin.outlet.produk');
-    Route::post('/admin/kelolaOutlet/tambahproduk', [Admin\KelolaOutletController::class, 'tambahProduk'])->name('admin.outlet.tambahProduk');
+    Route::get('/admin/kelolaoutlet/id/{id}/products', [Admin\KelolaProductsController::class, 'showProducts'])->name('admin.productsOutlet');
+    Route::post('/admin/kelolaUsers/tambahproduct', [Admin\KelolaUsersController::class, 'tambahUser'])->name('admin.tambahProduct'); 
+    Route::post('/admin/kelolaUsers/editproduct', [Admin\KelolaUsersController::class, 'tambahUser'])->name('admin.editProduct'); 
+    
     // outlet Users
+    Route::get('/admin/kelolaoutlet/id/{id}/kasir', [Admin\KelolaUsersController::class, 'showUsersOutlet'])->name('admin.kasirOutlet');
+
     Route::get('/admin/kelolaUsers', [Admin\KelolaUsersController::class, 'showUsers'])->name('admin.kelolaUsers'); 
     Route::get('/admin/kelolaUsers/edit', [Admin\KelolaUsersController::class, 'showUsers'])->name('admin.editUser'); 
     Route::post('/admin/kelolaUsers/hapususer/{id}', [Admin\KelolaUsersController::class, 'hapusUser'])->name('admin.deleteUser');

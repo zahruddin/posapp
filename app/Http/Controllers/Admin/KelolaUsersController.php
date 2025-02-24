@@ -27,6 +27,14 @@ class KelolaUsersController extends Controller
         $outlets = Outlet::all(); 
         return view('admin.kelolausers', compact('users','outlets'));
     }
+
+    function showUsersOutlet($id) {
+        // $users = User::all(); 
+        $users = User::with('outlet')->where('id_outlet', $id)->paginate(10); // Ambil 5 data per halaman
+        $outlets = Outlet::findOrFail($id);
+        return view('admin.kelolausers', compact('users','outlets'));
+    }
+
     public function tambahUser(Request $request)
     {
         // Validasi input

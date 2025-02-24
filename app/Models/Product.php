@@ -17,13 +17,18 @@ class Product extends Model
     protected $fillable = [
         'id_outlet',
         'nama_produk',
+        'gambar',
         'harga_produk',
         'stok_produk',
+        'deskripsi',
+        'status',
     ];
 
     // Tipe data yang harus dikonversi
     protected $casts = [
         'harga_produk' => 'decimal:2', // Harga dikonversi ke format decimal
+        'stok_produk' => 'integer', // Stok dikonversi ke integer
+        'status' => 'string', // Status tetap sebagai string (enum)
     ];
 
     // Relasi ke model Outlet (Satu outlet bisa memiliki banyak produk)

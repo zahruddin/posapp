@@ -1,7 +1,16 @@
 @extends('layouts.app')
 
 @section('title', 'Kelola Users Admin | TrackBooth')
+
+@if(isset($outlets) && !empty($outlets->nama_outlet))
+    @section('page', 'Kelola Users Outlet')
+    @push('outlet')
+        / {{ $outlets->nama_outlet }} 
+    @endpush
+@else
 @section('page', 'Kelola Users')
+@endif
+
 
 @section('content')
 <div class="app-content">
@@ -66,19 +75,35 @@
                                     </div>
                                 </div>
                                 <div class="form-group">
+                                    @php
+                                        // Ambil ID outlet dari URL (segment ke-4 dari /admin/kelolaoutlet/id/{id}/kasir)
+                                        $idOutletFromUrl = Request::segment(4);
+                                    @endphp
                                     <label for="role">Role</label>
                                     <select class="form-control" name="role" id="role" required onchange="toggleOutletField()">
-                                        <option value="admin">Admin</option>
-                                        <option value="kasir" selected>Kasir</option>
+                                        @if(!$idOutletFromUrl)
+                                            <option value="admin">Admin</option>
+                                            <option value="kasir" selected>Kasir</option>
+                                        @else
+                                            <option value="kasir" selected>Kasir</option>
+                                        @endif
                                     </select>
                                 </div>
                                 <div class="form-group" id="outletField">
                                     <label for="id_outlet">Outlet</label>
                                     <select class="form-control" name="id_outlet">
-                                        @foreach($outlets as $outlet)
-                                            <option value="{{ $outlet->id }}">{{ $outlet->nama_outlet }}</option>
-                                        @endforeach
-                                    </select>
+                                        @if($idOutletFromUrl)
+                                            <!-- Jika ID outlet ada di URL, pilih secara default -->
+                                            <option value="{{ $idOutletFromUrl }}" selected>{{ $outlets->where('id', $idOutletFromUrl)->first()->nama_outlet ?? 'Outlet Tidak Ditemukan' }}</option>
+                                        @else
+                                        <!-- Tampilkan opsi lainnya dari database -->
+                                            @foreach($outlets as $outlet)
+                                                <option value="{{ $outlet->id }}" {{ ($idOutletFromUrl == $outlet->id) ? 'selected' : '' }}>
+                                                    {{ $outlet->nama_outlet }}
+                                                </option>
+                                            @endforeach
+                                        @endif
+                                    </select>                                    
                                 </div>
                             </div>
                             <div class="modal-footer">

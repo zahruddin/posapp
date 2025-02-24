@@ -324,7 +324,7 @@
                                     </p>
                             </a>
                         </li>
-                        <li class="nav-item">
+                        {{-- <li class="nav-item">
                             <a href="#" class="nav-link">
                             <i class="nav-icon bi bi-box-seam-fill"></i>
                             <p>
@@ -352,60 +352,33 @@
                                 </a>
                             </li>
                             </ul>
-                        </li>
-                        <li class="nav-header">MULTI LEVEL EXAMPLE</li>              
-                        <li class="nav-item">
-                            <a href="#" class="nav-link">
-                            <i class="nav-icon bi bi-circle-fill"></i>
-                            <p>
-                                Level 1
-                                <i class="nav-arrow bi bi-chevron-right"></i>
-                            </p>
-                            </a>
-                            <ul class="nav nav-treeview">
-                            <li class="nav-item">
-                                <a href="#" class="nav-link">
-                                <i class="nav-icon bi bi-circle"></i>
-                                <p>Level 2</p>
+                        </li> --}}
+                        @php
+                            $outletId = Request::segment(4); // Ambil ID outlet dari URL
+                        @endphp
+
+                        @if(Request::segment(1) == 'admin' && Request::segment(2) == 'kelolaoutlet' && Request::segment(3) == 'id')
+                            <li class="nav-header">OUTLET MENU</li>              
+                            <li class="nav-item {{ request()->routeIs('admin.dashboardOutlet') ? 'active' : '' }}">
+                                <a href="{{ route('admin.dashboardOutlet', ['id' => $outletId]) }}" class="nav-link {{ request()->routeIs('admin.dashboardOutlet') ? 'active' : '' }}">
+                                    <i class="nav-icon bi bi-circle-fill"></i>
+                                    <p>Dashboard Outlet</p>
                                 </a>
                             </li>
-                            <li class="nav-item">
-                                <a href="#" class="nav-link">
-                                <i class="nav-icon bi bi-circle"></i>
-                                <p>
-                                    Level 2
-                                    <i class="nav-arrow bi bi-chevron-right"></i>
-                                </p>
-                                </a>
-                                <ul class="nav nav-treeview">
-                                <li class="nav-item">
-                                    <a href="#" class="nav-link">
-                                    <i class="nav-icon bi bi-record-circle-fill"></i>
-                                    <p>Level 3</p>
-                                    </a>
-                                </li>
-                                <li class="nav-item">
-                                    <a href="#" class="nav-link">
-                                    <i class="nav-icon bi bi-record-circle-fill"></i>
-                                    <p>Level 3</p>
-                                    </a>
-                                </li>
-                                <li class="nav-item">
-                                    <a href="#" class="nav-link">
-                                    <i class="nav-icon bi bi-record-circle-fill"></i>
-                                    <p>Level 3</p>
-                                    </a>
-                                </li>
-                                </ul>
-                            </li>
-                            <li class="nav-item">
-                                <a href="#" class="nav-link">
-                                <i class="nav-icon bi bi-circle"></i>
-                                <p>Level 2</p>
+                            <li class="nav-item {{ request()->routeIs('admin.kasirOutlet') ? 'active' : '' }}">
+                                <a href="{{ route('admin.kasirOutlet', ['id' => $outletId]) }}" class="nav-link {{ request()->routeIs('admin.kasirOutlet') ? 'active' : '' }}">
+                                    <i class="nav-icon bi bi-circle-fill"></i>
+                                    <p>Kasir</p>
                                 </a>
                             </li>
-                            </ul>
-                        </li>
+                            <li class="nav-item {{ request()->routeIs('admin.productsOutlet') ? 'active' : '' }}">
+                                <a href="{{ route('admin.productsOutlet', ['id' => $outletId]) }}" class="nav-link {{ request()->routeIs('admin.productsOutlet') ? 'active' : '' }}">
+                                    <i class="nav-icon bi bi-circle-fill"></i>
+                                    <p>Products</p>
+                                </a>
+                            </li>
+                        @endif
+                        {{-- end outlet menu --}}
                     @endif
                     <!-- Menu untuk Kasir -->
                     @if(Auth::user()->role == 'kasir')
@@ -438,7 +411,7 @@
                         <div class="col-sm-6">
                         <ol class="breadcrumb float-sm-end bg-transparent ">
                             <li class="breadcrumb-item"><a href="">Home</a></li>
-                            <li class="breadcrumb-item active" aria-current="page">@yield('page', 'Dashboard')</li>
+                            <li class="breadcrumb-item active" aria-current="page">@yield('page', 'Dashboard')@stack('outlet')</li>
                         </ol>
                         </div>
                     </div>
@@ -499,7 +472,7 @@
         <!-- DataTables JS -->
         <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
 
-        {{-- <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.bundle.min.js"></script> --}}
+        <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.bundle.min.js"></script>
         <!--end::Script-->
         @yield('scripts')
     </body>
