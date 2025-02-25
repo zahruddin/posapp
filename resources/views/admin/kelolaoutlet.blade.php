@@ -4,95 +4,97 @@
 @section('page', 'Kelola Outlet')
 
 @section('content')
-
-  <!--end::App Content Header-->
-  <!--begin::App Content-->
-  <div class="app-content">
-    <!--begin::Container-->
-    <div class="container-fluid">
-      {{-- ALERT --}}
-      @if(session('success'))
-        <div class="alert alert-success alert-dismissible fade show" role="alert">
-            {{ session('success') }}
-            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                <span aria-hidden="true">&times;</span>
-            </button>
-        </div>
-        @endif
-
-        @if(session('error'))
-        <div class="alert alert-danger alert-dismissible fade show" role="alert">
-            {{ session('error') }}
-            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                <span aria-hidden="true">&times;</span>
-            </button>
-        </div>
-      @endif
-      {{-- END ALERT --}}
-        <div class="mb-4">
-            <button type="button" class="btn btn-md btn-primary" data-toggle="modal" data-target="#exampleModal">
-                Tambah Outlet
-            </button>
-            <!-- Modal -->
-            <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-              <div class="modal-dialog modal-dialog-centered" role="document">
-                  <div class="modal-content">
-                      <div class="modal-header">
-                          <h5 class="modal-title" id="exampleModalLabel">Tambah Outlet</h5>
-                          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                              <span aria-hidden="true">&times;</span>
-                          </button>
-                      </div>
-                      <form action="{{ route('admin.tambahOutlet') }}" method="POST">
-                          @csrf
-                          <div class="modal-body">
-                              <div class="form-group">
-                                  <label for="nama_outlet">Nama Outlet</label>
-                                  <input type="text" class="form-control" id="nama_outlet" name="nama_outlet" required>
-                              </div>
-                              <div class="form-group">
-                                  <label for="alamat_outlet">Alamat Outlet</label>
-                                  <input type="text" class="form-control" id="alamat_outlet" name="alamat_outlet" required>
-                              </div>
-                          </div>
-                          <div class="modal-footer">
-                              <button type="button" class="btn btn-secondary" data-dismiss="modal">Tutup</button>
-                              <button type="submit" class="btn btn-primary">Simpan</button>
-                          </div>
-                      </form>
-                  </div>
-              </div>
-          </div>          
-            {{-- akhir modal --}}
-        </div>
-      <!--begin::Row-->
-      <div class="row g-4 mb-4">
-        @foreach($outlets as $outlet)
-          <div class="col-md-3">
-              <div class="card card-success">
-                  <div class="card-header">
-                      <h3 class="card-title">{{ $outlet->nama_outlet }}</h3>
-                      <div class="card-tools">
-                          <button type="button" class="btn btn-tool" data-lte-toggle="card-collapse">
-                              <i data-lte-icon="expand" class="bi bi-plus-lg"></i>
-                              <i data-lte-icon="collapse" class="bi bi-dash-lg"></i>
-                          </button>
-                      </div>
-                  </div>
-                  <div class="card-body">
-                      <p><strong>Alamat:</strong> {{ $outlet->alamat_outlet }}</p>
-                      <a href="{{ route('admin.dashboardOutlet', ['id' => $outlet->id]) }}" class="btn btn-primary btn-sm">
-                          Lihat Dashboard
-                      </a>
-                  </div>
-              </div>
-          </div>
-        @endforeach
-      </div>
+    <!--end::App Content Header-->
+    <!--begin::App Content-->
+    <div class="app-content">
+        <div class="container-fluid">
+            {{-- ALERT --}}
+            @include('components.alert')
+            {{-- END ALERT --}}
     
-      <!--end::Row-->
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <button type="button" class="btn btn-md btn-primary" data-bs-toggle="modal" data-bs-target="#tambahoutlet">
+                    <i class="bi bi-plus-lg"></i> Tambah Outlet
+                </button>
+            </div>
+    
+            <!-- Modal Tambah Outlet -->
+            <div class="modal fade" id="tambahoutlet" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="exampleModalLabel">Tambah Outlet</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <form action="{{ route('admin.tambahOutlet') }}" method="POST">
+                            @csrf
+                            <div class="modal-body">
+                                <div class="mb-3">
+                                    <label for="nama_outlet" class="form-label">Nama Outlet</label>
+                                    <input type="text" class="form-control" id="nama_outlet" name="nama_outlet" placeholder="Masukkan nama outlet" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="alamat_outlet" class="form-label">Alamat Outlet</label>
+                                    <input type="text" class="form-control" id="alamat_outlet" name="alamat_outlet" placeholder="Masukkan alamat outlet" required>
+                                </div>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>
+                                <button type="submit" class="btn btn-primary">Simpan</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            <!-- Akhir Modal -->
+    
+            <!-- Row untuk menampilkan daftar outlet -->
+            <div class="row g-3">
+                @php
+                    $colors = ['primary', 'success', 'warning', 'danger', 'info', 'secondary'];
+                @endphp
+                @foreach($outlets as $index => $outlet)
+                    @php
+                        $color = $colors[$index % count($colors)]; // Ambil warna berdasarkan indeks
+                    @endphp
+                    <div class="col-md-4">
+                        <div class="card shadow-sm">
+                            <!-- Card Header dengan warna dinamis -->
+                            <div class="card-header bg-{{ $color }} text-white d-flex align-items-center">
+                                <h5 class="mb-0">{{ $loop->iteration }}. {{ $outlet->nama_outlet }}</h5>
+                                <div class="card-tools ms-auto">
+                                    <button type="button" class="btn btn-sm btn-light" data-lte-toggle="card-collapse">
+                                        <i class="bi bi-chevron-down"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        
+                            <!-- Card Body (Collapsible) -->
+                            <div class="card-body">
+                                <p><i class="bi bi-geo-alt"></i> <strong>Alamat:</strong> {{ $outlet->alamat_outlet }}</p>
+                                <p><i class="bi bi-cash-stack"></i> <strong>Total Pendapatan:</strong> Rp5.000.000</p> 
+                                <p><i class="bi bi-receipt"></i> <strong>Jumlah Transaksi:</strong> 120</p> 
+                                <p><i class="bi bi-calendar-check"></i> <strong>Bergabung Sejak:</strong> 12 Januari 2024</p> 
+                            </div>
+                        
+                            <!-- Card Footer -->
+                            <div class="card-footer d-flex justify-content-end gap-2">
+                                <a href="{{ route('admin.dashboardOutlet', ['id' => $outlet->id]) }}" class="btn btn-sm btn-primary d-flex align-items-center">
+                                    <i class="bi bi-bar-chart me-2"></i> Dashboard
+                                </a>
+                                <button class="btn btn-sm btn-danger d-flex align-items-center">
+                                    <i class="bi bi-trash me-2"></i> Hapus
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                @endforeach
+
+            </div>
+            <!-- Akhir Row -->
+        </div>
     </div>
-    <!--end::Container-->
-  </div>
-  <!--end::App Content-->
+    
+     
+    <!--end::App Content-->
 @endsection

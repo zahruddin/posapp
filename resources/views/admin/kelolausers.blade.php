@@ -16,186 +16,157 @@
 <div class="app-content">
     <div class="container-fluid">
         {{-- ALERT --}}
-        @if(session('success'))
-            <div class="alert alert-success alert-dismissible fade show" role="alert">
-                {{ session('success') }}
-                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-            </div>
-        @endif
-        @if(session('error'))
-            <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                {{ session('error') }}
-                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-            </div>
-        @endif
+        @include('components.alert')
         {{-- END ALERT --}}
-
-        {{-- MODAL tambah user --}}
-        {{-- <div class="mb-4"> --}}
-            {{-- <button type="button" class="btn btn-md btn-primary" data-toggle="modal" data-target="#modalTambahUser">
-                Tambah User
-            </button> --}}
-            <div class="modal fade" id="modalTambahUser" tabindex="-1" role="dialog">
-                <div class="modal-dialog modal-dialog-centered" role="document">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <h5 class="modal-title">Tambah User</h5>
-                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                <span aria-hidden="true">&times;</span>
-                            </button>
-                        </div>
-                        <form action="{{ route('admin.tambahUser') }}" method="POST">
-                            @csrf
-                            <div class="modal-body">
-                                <div class="form-group">
-                                    <label for="name">Nama</label>
-                                    <input type="text" class="form-control" name="name" required>
-                                </div>
-                                <div class="form-group">
-                                    <label for="username">Username</label>
-                                    <input type="text" class="form-control" name="username" required>
-                                </div>
-                                <div class="form-group">
-                                    <label for="email">Email</label>
-                                    <input type="email" class="form-control" name="email" required>
-                                </div>
-                                <div class="form-group">
-                                    <label for="password">Password</label>
-                                    <div class="input-group">
-                                        <input type="password" class="form-control" name="password" id="password" placeholder="Minimal 6 karakter" required>
-                                        <div class="input-group-append">
-                                            <button type="button" class="btn btn-outline-secondary" onclick="togglePassword()">
-                                                <i class="bi bi-eye" id="toggleIcon"></i>
-                                            </button>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="form-group">
-                                    @php
-                                        // Ambil ID outlet dari URL (segment ke-4 dari /admin/kelolaoutlet/id/{id}/kasir)
-                                        $idOutletFromUrl = Request::segment(4);
-                                    @endphp
-                                    <label for="role">Role</label>
-                                    <select class="form-control" name="role" id="role" required onchange="toggleOutletField()">
-                                        @if(!$idOutletFromUrl)
-                                            <option value="admin">Admin</option>
-                                            <option value="kasir" selected>Kasir</option>
-                                        @else
-                                            <option value="kasir" selected>Kasir</option>
-                                        @endif
-                                    </select>
-                                </div>
-                                <div class="form-group" id="outletField">
-                                    <label for="id_outlet">Outlet</label>
-                                    <select class="form-control" name="id_outlet">
-                                        @if($idOutletFromUrl)
-                                            <!-- Jika ID outlet ada di URL, pilih secara default -->
-                                            <option value="{{ $idOutletFromUrl }}" selected>{{ $outlets->where('id', $idOutletFromUrl)->first()->nama_outlet ?? 'Outlet Tidak Ditemukan' }}</option>
-                                        @else
-                                        <!-- Tampilkan opsi lainnya dari database -->
-                                            @foreach($outlets as $outlet)
-                                                <option value="{{ $outlet->id }}" {{ ($idOutletFromUrl == $outlet->id) ? 'selected' : '' }}>
-                                                    {{ $outlet->nama_outlet }}
-                                                </option>
-                                            @endforeach
-                                        @endif
-                                    </select>                                    
-                                </div>
-                            </div>
-                            <div class="modal-footer">
-                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Tutup</button>
-                                <button type="submit" class="btn btn-primary">Simpan</button>
-                            </div>
-                        </form>
-                    </div>
+            
+        <div class="card">
+            <div class="card-body">
+                <div class="mb-2">
+                    <button type="button" class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#modalTambahUser">
+                        Tambah User
+                    </button>
                 </div>
-            </div>
-        {{-- </div> --}}
-        {{-- end modal tambah user --}}
-
-        {{-- <div class="col-12 mb-4"> --}}
-            <div class="card">
-                <div class="card-body">
-                    <div class="mb-2">
-                        <button type="button" class="btn btn-sm btn-primary" data-toggle="modal" data-target="#modalTambahUser">
-                            Tambah User
-                        </button>
-                    </div>
-                    <div class="table-responsive">
-                        <table class="table table-bordered table-striped">
-                            <thead>
+                <div class="table-responsive">
+                    <table class="table table-bordered table-striped">
+                        <thead>
+                            <tr>
+                                <th>No</th>
+                                <th>Nama</th>
+                                <th>Username</th>
+                                <th>Email</th>
+                                <th>Role</th>
+                                <th>Nama Outlet</th>
+                                <th>Aksi</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach($users as $index => $user)
                                 <tr>
-                                    <th>No</th>
-                                    <th>Nama</th>
-                                    <th>Username</th>
-                                    <th>Email</th>
-                                    <th>Role</th>
-                                    <th>Nama Outlet</th>
-                                    <th>Aksi</th>
+                                    <td>{{ $users->firstItem() + $index }}</td>
+                                    <td>{{ $user->name }}</td>
+                                    <td>{{ $user->username }}</td>
+                                    <td>{{ $user->email }}</td>
+                                    <td><span class="badge bg-info">{{ ucfirst($user->role) }}</span></td>
+                                    <td>{{ $user->outlet->nama_outlet ?? '-' }}</td>
+                                    <td>
+                                        <a href="{{ route('admin.dashboardOutlet', ['id' => $user->id]) }}" class="btn btn-primary btn-sm">
+                                            <i class="bi bi-speedometer2"></i>
+                                        </a>
+                                        <a href="{{ route('admin.editUser', ['id' => $user->id]) }}" class="btn btn-warning btn-sm">
+                                            <i class="bi bi-pencil-square"></i>
+                                        </a>
+                                        <button class="btn btn-danger btn-sm deleteUser" data-id="{{ $user->id }}">
+                                            <i class="bi bi-trash"></i>
+                                        </button>                                            
+                                    </td>
                                 </tr>
-                            </thead>
-                            <tbody>
-                                @foreach($users as $index => $user)
-                                    <tr>
-                                        <td>{{ $users->firstItem() + $index }}</td>
-                                        <td>{{ $user->name }}</td>
-                                        <td>{{ $user->username }}</td>
-                                        <td>{{ $user->email }}</td>
-                                        <td><span class="badge badge-info">{{ ucfirst($user->role) }}</span></td>
-                                        <td>{{ $user->outlet->nama_outlet ?? '-' }}</td>
-                                        <td>
-                                            <a href="{{ route('admin.dashboardOutlet', ['id' => $user->id]) }}" class="btn btn-primary btn-sm">
-                                                <i class="bi bi-speedometer2"></i>
-                                            </a>
-                                            <a href="{{ route('admin.editUser', ['id' => $user->id]) }}" class="btn btn-warning btn-sm">
-                                                <i class="bi bi-pencil-square"></i>
-                                            </a>
-                                            <button class="btn btn-danger btn-sm deleteUser" data-id="{{ $user->id }}">
-                                                <i class="bi bi-trash"></i>
-                                            </button>                                            
-                                        </td>
-                                    </tr>
-                                @endforeach
-                            </tbody>
-                        </table>
-                    </div>
-            
-                    <!-- Pagination -->
-                    <div class="d-flex justify-content-end mt-3">
-                        {{ $users->links('vendor.pagination.bootstrap-4') }}
-                    </div>
-            
+                            @endforeach
+                        </tbody>
+                    </table>
                 </div>
+        
+                <!-- Pagination -->
+                <div class="d-flex justify-content-end mt-3">
+                    {{ $users->links('vendor.pagination.bootstrap-5') }}
+                </div>
+        
             </div>
-            
-            
-            <!-- /.card -->
-        {{-- </div> --}}
-        {{-- modal notif konfirmasi delete --}}
-        <!-- Modal Konfirmasi Hapus -->
-        <div class="modal fade" id="confirmDeleteModal" tabindex="-1" role="dialog">
-            <div class="modal-dialog" role="document">
+        </div>
+        <!-- /.card -->
+
+
+
+        {{-- MODAL TAMBAH USER --}}
+        <div class="modal fade" id="modalTambahUser" tabindex="-1" aria-labelledby="modalTambahUserLabel" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <h5 class="modal-title">Konfirmasi Hapus</h5>
-                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                            <span aria-hidden="true">&times;</span>
-                        </button>
+                        <h5 class="modal-title" id="modalTambahUserLabel">Tambah User</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <form action="{{ route('admin.tambahUser') }}" method="POST">
+                        @csrf
+                        <div class="modal-body">
+                            <div class="mb-3">
+                                <label for="name" class="form-label">Nama</label>
+                                <input type="text" class="form-control" name="name" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="username" class="form-label">Username</label>
+                                <input type="text" class="form-control" name="username" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="email" class="form-label">Email</label>
+                                <input type="email" class="form-control" name="email" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="password" class="form-label">Password</label>
+                                <div class="input-group">
+                                    <input type="password" class="form-control" name="password" id="password" placeholder="Minimal 6 karakter" required>
+                                    <button type="button" class="btn btn-outline-secondary" onclick="togglePassword()">
+                                        <i class="bi bi-eye" id="toggleIcon"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="mb-3">
+                                @php
+                                    // Ambil ID outlet dari URL (segment ke-4 dari /admin/kelolaoutlet/id/{id}/kasir)
+                                    $idOutletFromUrl = Request::segment(4);
+                                @endphp
+                                <label for="role" class="form-label">Role</label>
+                                <select class="form-select" name="role" id="role" required onchange="toggleOutletField()">
+                                    @if(!$idOutletFromUrl)
+                                        <option value="admin">Admin</option>
+                                        <option value="kasir" selected>Kasir</option>
+                                    @else
+                                        <option value="kasir" selected>Kasir</option>
+                                    @endif
+                                </select>
+                            </div>
+                            <div class="mb-3" id="outletField">
+                                <label for="id_outlet" class="form-label">Outlet</label>
+                                <select class="form-select" name="id_outlet">
+                                    @if($idOutletFromUrl)
+                                        <option value="{{ $idOutletFromUrl }}" selected>
+                                            {{ $outlets->where('id', $idOutletFromUrl)->first()->nama_outlet ?? 'Outlet Tidak Ditemukan' }}
+                                        </option>
+                                    @else
+                                        @foreach($outlets as $outlet)
+                                            <option value="{{ $outlet->id }}" {{ ($idOutletFromUrl == $outlet->id) ? 'selected' : '' }}>
+                                                {{ $outlet->nama_outlet }}
+                                            </option>
+                                        @endforeach
+                                    @endif
+                                </select>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>
+                            <button type="submit" class="btn btn-primary">Simpan</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+        <!-- Modal Konfirmasi Hapus -->
+        <div class="modal fade" id="confirmDeleteModal" tabindex="-1" aria-labelledby="confirmDeleteModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="confirmDeleteModalLabel">Konfirmasi Hapus</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
                     <div class="modal-body">
                         Apakah Anda yakin ingin menghapus pengguna ini?
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" id="bataldelete" data-dismiss="modal">Batal</button>
+                        <button type="button" class="btn btn-secondary" id="bataldelete" data-bs-dismiss="modal">Batal</button>
                         <button id="confirmDeleteBtn" class="btn btn-danger">Hapus</button>
                     </div>
                 </div>
             </div>
         </div>
+        
         {{-- end modal notif konfirmasi delete --}}
 
     </div>

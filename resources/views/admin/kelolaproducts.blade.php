@@ -16,85 +16,16 @@
 <div class="app-content">
     <div class="container-fluid">
         {{-- ALERT --}}
-        @if(session('success'))
-            <div class="alert alert-success alert-dismissible fade show" role="alert">
-                {{ session('success') }}
-                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-            </div>
-        @endif
-        @if(session('error'))
-            <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                {{ session('error') }}
-                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-            </div>
-        @endif
+    
+        @include('components.alert')
         {{-- END ALERT --}}
 
-        {{-- MODAL tambah user --}}
-        <div class="modal fade" id="modalTambahProduct" tabindex="-1" role="dialog">
-            <div class="modal-dialog modal-dialog-centered" role="document">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title">Tambah Produk</h5>
-                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                            <span aria-hidden="true">&times;</span>
-                        </button>
-                    </div>
-                    <form action="{{ route('admin.tambahProduct') }}" method="POST" enctype="multipart/form-data">
-                        @csrf
-                        <div class="modal-body">
-                            <div class="form-group">
-                                <label for="nama_produk">Nama Produk</label>
-                                <input type="text" class="form-control" name="nama_produk" required>
-                            </div>
-                            <div class="form-group">
-                                <label for="harga_produk">Harga</label>
-                                <input type="number" class="form-control" name="harga_produk" required>
-                            </div>
-                            <div class="form-group">
-                                <label for="stok_produk">Stok</label>
-                                <input type="number" class="form-control" name="stok_produk" required>
-                            </div>
-                            <div class="form-group">
-                                <label for="deskripsi">Deskripsi</label>
-                                <textarea class="form-control" name="deskripsi" rows="3"></textarea>
-                            </div>
-                            <div class="form-group">
-                                <label for="gambar">Gambar Produk</label>
-                                <input type="file" class="form-control-file" name="gambar" id="gambarInput" accept="image/*">
-                                <small class="text-muted">Format: JPG, PNG, JPEG (Max 2MB)</small>
-                                <div class="mt-2">
-                                    <img id="gambarPreview" src="#" alt="Preview Gambar" class="d-none rounded img-thumbnail" width="100">
-                                </div>
-                            </div>
-                            <div class="form-group">
-                                <label for="status">Status</label>
-                                <select class="form-control" name="status">
-                                    <option value="aktif">Aktif</option>
-                                    <option value="nonaktif">Nonaktif</option>
-                                </select>
-                            </div>
-                        </div>
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Tutup</button>
-                            <button type="submit" class="btn btn-primary">Simpan</button>
-                        </div>
-                    </form>
-                </div>
-            </div>
-        </div>
         
-        {{-- </div> --}}
-        {{-- end modal tambah user --}}
-        {{-- card --}}
+        {{-- TABEL card --}}
         <div class="card">
             <div class="card-body">
                 <div class="mb-2">
-                    <button type="button" class="btn btn-sm btn-primary" data-toggle="modal" data-target="#modalTambahProduct">
+                    <button type="button" class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#modalTambahProduct">
                         Tambah Product
                     </button>
                 </div>
@@ -131,7 +62,7 @@
                                     <td>{{ $product->stok_produk }}</td>
                                     <td>{{ Str::limit($product->deskripsi, 50, '...') }}</td>
                                     <td>
-                                        <span class="badge badge-{{ $product->status == 'aktif' ? 'success' : 'secondary' }}">
+                                        <span class="badge bg-{{ $product->status == 'aktif' ? 'success' : 'secondary' }}">
                                             {{ ucfirst($product->status) }}
                                         </span>
                                     </td>
@@ -139,7 +70,7 @@
                                         <a href="{{ route('admin.editProduct', ['id' => $product->id]) }}" class="btn btn-warning btn-sm">
                                             <i class="bi bi-pencil-square"></i>
                                         </a>
-                                        <button class="btn btn-danger btn-sm deleteProduct" data-id="{{ $product->id }}">
+                                        <button class="btn btn-danger btn-sm deleteUser deleteProduct" data-id="{{ $product->id }}">
                                             <i class="bi bi-trash"></i>
                                         </button>                                            
                                     </td>
@@ -150,85 +81,75 @@
                 </div>
                 <!-- Pagination -->
                 <div class="d-flex justify-content-end mt-3">
-                    {{ $products->links('vendor.pagination.bootstrap-4') }}
+                    {{ $products->links('vendor.pagination.bootstrap-5') }}
                 </div>
             </div>
         </div>
-        {{-- <div class="card">
-            <div class="card-header">
-                <button type="button" class="btn btn-primary btn-sm" data-toggle="modal" data-target="#modalTambahProduct">
-                    <i class="fas fa-plus"></i> Tambah Produk
-                </button>
-            </div>
-            <div class="card-body">
-                <table id="tableProducts" class="table table-bordered table-hover">
-                    <thead>
-                        <tr>
-                            <th>No</th>
-                            <th>Nama Produk</th>
-                            <th>Gambar</th>
-                            <th>Harga</th>
-                            <th>Stok</th>
-                            <th>Deskripsi</th>
-                            <th>Status</th>
-                            <th>Aksi</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach($products as $index => $product)
-                            <tr>
-                                <td>{{ $loop->iteration }}</td>
-                                <td>{{ $product->nama_produk }}</td>
-                                <td>
-                                    @if($product->gambar)
-                                        <img src="{{ asset('storage/' . $product->gambar) }}" class="img-thumbnail" width="50" height="50" alt="Produk">
-                                    @else
-                                        <span class="text-muted">Tidak Ada</span>
-                                    @endif
-                                </td>
-                                <td>Rp {{ number_format($product->harga_produk, 0, ',', '.') }}</td>
-                                <td>{{ $product->stok_produk }}</td>
-                                <td>{{ Str::limit($product->deskripsi, 50, '...') }}</td>
-                                <td>
-                                    <span class="badge badge-{{ $product->status == 'aktif' ? 'success' : 'secondary' }}">
-                                        {{ ucfirst($product->status) }}
-                                    </span>
-                                </td>
-                                <td>
-                                    <a href="{{ route('admin.editProduct', ['id' => $product->id]) }}" class="btn btn-warning btn-sm">
-                                        <i class="fas fa-edit"></i>
-                                    </a>
-                                    <button class="btn btn-danger btn-sm deleteProduct" data-id="{{ $product->id }}">
-                                        <i class="fas fa-trash"></i>
-                                    </button>                                            
-                                </td>
-                            </tr>
-                        @endforeach
-                    </tbody>
-                </table>
-            </div>
-            <!-- Pagination -->
-            <div class="d-flex justify-content-end mt-3">
-                {{ $products->links('vendor.pagination.bootstrap-4') }}
-            </div>
-        </div> --}}
-        <!-- /.card -->
-        {{-- modal notif konfirmasi delete --}}
-        <!-- Modal Konfirmasi Hapus -->
-        <div class="modal fade" id="confirmDeleteModal" tabindex="-1" role="dialog">
-            <div class="modal-dialog" role="document">
+        <!-- /.TABEL card -->
+        {{-- MODAL Tambah Produk --}}
+        <div class="modal fade" id="modalTambahProduct" tabindex="-1" aria-labelledby="modalTambahProductLabel" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <h5 class="modal-title">Konfirmasi Hapus</h5>
-                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                            <span aria-hidden="true">&times;</span>
-                        </button>
+                        <h5 class="modal-title" id="modalTambahProductLabel">Tambah Produk</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <form action="{{ route('admin.tambahProduct') }}" method="POST" enctype="multipart/form-data">
+                        @csrf
+                        <div class="modal-body">
+                            <div class="mb-3">
+                                <label for="nama_produk" class="form-label">Nama Produk</label>
+                                <input type="text" class="form-control" name="nama_produk" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="harga_produk" class="form-label">Harga</label>
+                                <input type="number" class="form-control" name="harga_produk" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="stok_produk" class="form-label">Stok</label>
+                                <input type="number" class="form-control" name="stok_produk" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="deskripsi" class="form-label">Deskripsi</label>
+                                <textarea class="form-control" name="deskripsi" rows="3"></textarea>
+                            </div>
+                            <div class="mb-3">
+                                <label for="gambar" class="form-label">Gambar Produk</label>
+                                <input type="file" class="form-control" name="gambar" id="gambarInput" accept="image/*">
+                                <small class="text-muted">Format: JPG, PNG, JPEG (Max 2MB)</small>
+                                <div class="mt-2">
+                                    <img id="gambarPreview" src="#" alt="Preview Gambar" class="d-none rounded img-thumbnail" width="100">
+                                </div>
+                            </div>
+                            <div class="mb-3">
+                                <label for="status" class="form-label">Status</label>
+                                <select class="form-select" name="status">
+                                    <option value="aktif">Aktif</option>
+                                    <option value="nonaktif">Nonaktif</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>
+                            <button type="submit" class="btn btn-primary">Simpan</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+        {{-- MODAL Konfirmasi Hapus --}}
+        <div class="modal fade" id="confirmDeleteModal" tabindex="-1" aria-labelledby="confirmDeleteModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="confirmDeleteModalLabel">Konfirmasi Hapus</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
                     <div class="modal-body">
                         Apakah Anda yakin ingin menghapus pengguna ini?
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" id="bataldelete" data-dismiss="modal">Batal</button>
+                        <button type="button" class="btn btn-secondary" id="bataldelete" data-bs-dismiss="modal">Batal</button>
                         <button id="confirmDeleteBtn" class="btn btn-danger">Hapus</button>
                     </div>
                 </div>
@@ -268,11 +189,11 @@
 </script>
 <script>
     $(document).ready(function () {
-        let deleteUserId;
+        let deleteProductId;
 
         // Saat tombol hapus diklik, simpan ID user
         $('.deleteUser').click(function () {
-            deleteUserId = $(this).data('id');
+            deleteProductId = $(this).data('id');
             $('#confirmDeleteModal').modal('show');
         });
         $('#bataldelete').click(function () {
@@ -283,9 +204,12 @@
         });
 
         // Saat tombol konfirmasi di modal diklik
+        // let outletId = "{{ Request::segment(4) }}"; 
+        let outletId = "{{ $outlet->id }}";
+        // console.log("ID Outlet:", idout); // Cek apakah id_outlet sudah benar
         $('#confirmDeleteBtn').click(function () {
             $.ajax({
-                url: "/admin/kelolaUsers/hapususer/" + deleteUserId,
+                url: `/admin/kelolaoutlet/id/${outletId}/products/${deleteProductId}`,
                 type: "POST",
                 data: {
                     _token: "{{ csrf_token() }}" // Kirim token CSRF

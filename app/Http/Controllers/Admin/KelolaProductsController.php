@@ -31,5 +31,22 @@ class KelolaProductsController extends Controller
         // Kirim data ke view
         return view('admin.kelolaproducts', compact('products', 'outlet'));
     }
+    public function hapusProduct($id_outlet, $id)
+    {
+        try {
+            // Cari produk berdasarkan id_outlet dan id
+            $product = Product::where('id_outlet', $id_outlet)->where('id', $id)->firstOrFail();
+    
+            // Hapus produk
+            $product->delete();
+            session()->flash('success', 'Product berhasil dihapus!');
+            return response()->json(['success' => 'Produk berhasil dihapus!']);
+        } catch (\Exception $e) {
+            return response()->json(['error' => 'Terjadi kesalahan: ' . $e->getMessage()], 500);
+        }
+    }
+    
+
+
 
 }

@@ -44,6 +44,7 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
     Route::get('/admin/kelolaoutlet/id/{id}/products', [Admin\KelolaProductsController::class, 'showProducts'])->name('admin.productsOutlet');
     Route::post('/admin/kelolaUsers/tambahproduct', [Admin\KelolaUsersController::class, 'tambahUser'])->name('admin.tambahProduct'); 
     Route::post('/admin/kelolaUsers/editproduct', [Admin\KelolaUsersController::class, 'tambahUser'])->name('admin.editProduct'); 
+    Route::post('/admin/kelolaoutlet/id/{id_outlet}/products/{id_product}', [Admin\KelolaProductsController::class, 'hapusProduct'])->name('admin.deleteProduct');
     
     // outlet Users
     Route::get('/admin/kelolaoutlet/id/{id}/kasir', [Admin\KelolaUsersController::class, 'showUsersOutlet'])->name('admin.kasirOutlet');

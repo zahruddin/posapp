@@ -1,7 +1,18 @@
 <!doctype html>
-<html lang="en">
+<html lang="id" data-bs-theme="auto">
   <!--begin::Head-->
     <head>
+        <script>
+            (function() {
+              let storedTheme = localStorage.getItem("theme") || "auto";
+              
+              if (storedTheme === "auto") {
+                storedTheme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+              }
+          
+              document.documentElement.setAttribute("data-bs-theme", storedTheme);
+            })();
+        </script>   
         <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
         <title>@yield('title', 'TrackBooth')</title>
         <!--begin::Primary Meta Tags-->
@@ -59,7 +70,8 @@
         crossorigin="anonymous"
         />
         <!-- CSS Bootstrap -->
-        <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet">
+        {{-- <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet"> --}}
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
     </head>
     <!--end::Head-->
     <!--begin::Body-->
@@ -216,6 +228,31 @@
                     </li>
                     <!--end::Fullscreen Toggle-->
                     <!--begin::User Menu Dropdown-->
+                    <li class="nav-item dropdown">
+                        <button class="btn btn-link nav-link dropdown-toggle d-flex align-items-center"
+                            id="bd-theme" type="button" aria-expanded="false" data-bs-toggle="dropdown" data-bs-display="static">
+                            <span class="theme-icon-active">
+                                <i class="bi bi-circle-half"></i>
+                            </span>
+                        </button>
+                        <ul class="dropdown-menu dropdown-menu-end">
+                            <li>
+                                <button type="button" class="dropdown-item d-flex align-items-center" data-bs-theme-value="light">
+                                    <i class="bi bi-sun-fill me-2"></i> Light
+                                </button>
+                            </li>
+                            <li>
+                                <button type="button" class="dropdown-item d-flex align-items-center" data-bs-theme-value="dark">
+                                    <i class="bi bi-moon-fill me-2"></i> Dark
+                                </button>
+                            </li>
+                            <li>
+                                <button type="button" class="dropdown-item d-flex align-items-center" data-bs-theme-value="auto">
+                                    <i class="bi bi-circle-half me-2"></i> Auto
+                                </button>
+                            </li>
+                        </ul>
+                    </li>  
                     <li class="nav-item dropdown user-menu">
                     <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">
                         <img
@@ -223,7 +260,7 @@
                         class="user-image rounded-circle shadow"
                         alt="User Image"
                         />
-                        <span class="d-none d-md-inline">Alexander Pierce</span>
+                        <span class="d-none d-md-inline">{{ Auth::user()->name }}</span>
                     </a>
                     <ul class="dropdown-menu dropdown-menu-lg dropdown-menu-end">
                         <!--begin::User Image-->
@@ -234,8 +271,8 @@
                             alt="User Image"
                         />
                         <p>
-                            Alexander Pierce - Web Developer
-                            <small>Member since Nov. 2023</small>
+                            {{ Auth::user()->name }}
+                            <small>Member since {{ Auth::user()->created_at->format('M. Y') }}</small>
                         </p>
                         </li>
                         <!--end::User Image-->
@@ -454,15 +491,13 @@
             crossorigin="anonymous"
         ></script>
         <!--end::Required Plugin(popperjs for Bootstrap 5)--><!--begin::Required Plugin(Bootstrap 5)-->
-        <script
+        {{-- <script
             src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.min.js"
             integrity="sha384-0pUGZvbkm6XF6gxjEnlmuGrJXVbNuzT9qBBavbLwCsOGabYfZo0T0to5eqruptLy"
             crossorigin="anonymous"
-        ></script>
+        ></script> --}}
         <!--end::Required Plugin(Bootstrap 5)--><!--begin::Required Plugin(AdminLTE)-->
         <!-- JS Bootstrap -->
-        {{-- <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script> --}}
-
         <!-- jQuery -->
         <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
@@ -472,9 +507,57 @@
         <!-- DataTables JS -->
         <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
 
-        <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.bundle.min.js"></script>
+        {{-- <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.bundle.min.js"></script> --}}
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
         <!--end::Script-->
         @yield('scripts')
+        <script>
+            (() => {
+                "use strict";
+            
+                const storedTheme = localStorage.getItem("theme");
+            
+                const getPreferredTheme = () => {
+                    if (storedTheme) {
+                        return storedTheme;
+                    }
+                    return window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+                };
+            
+                const setTheme = (theme) => {
+                    if (theme === "auto") {
+                        theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+                    }
+                    document.documentElement.setAttribute("data-bs-theme", theme);
+                    localStorage.setItem("theme", theme);
+                    updateActiveIcon(theme);
+                };
+            
+                const updateActiveIcon = (theme) => {
+                    const activeIcon = document.querySelector(".theme-icon-active i");
+                    if (!activeIcon) return;
+            
+                    const iconMap = {
+                        "light": "bi bi-sun-fill",
+                        "dark": "bi bi-moon-fill",
+                        "auto": "bi bi-circle-half"
+                    };
+            
+                    activeIcon.setAttribute("class", iconMap[theme] || "bi bi-circle-half");
+                };
+            
+                // Terapkan tema saat halaman dimuat
+                setTheme(getPreferredTheme());
+            
+                // Event listener untuk setiap tombol tema
+                document.querySelectorAll("[data-bs-theme-value]").forEach((btn) => {
+                    btn.addEventListener("click", () => {
+                        const theme = btn.getAttribute("data-bs-theme-value");
+                        setTheme(theme);
+                    });
+                });
+            })();        
+        </script>            
     </body>
 <!--end::Body-->
 </html>
