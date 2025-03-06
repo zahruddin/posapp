@@ -35,7 +35,7 @@ class LoginController extends Controller
     // Proses login
     public function login(Request $request)
     {
-        // Validasi input pengguna
+        // Validasi input
         $request->validate([
             'username_or_email' => 'required|string',
             'password' => 'required|string',
@@ -43,16 +43,14 @@ class LoginController extends Controller
 
         $remember = $request->has('remember'); // Ambil status remember me
 
-        // Coba login dengan username atau email dalam satu percobaan saja
-        if (Auth::attempt(['username' => $request->username_or_email, 'password' => $request->password], $remember) ||
-            Auth::attempt(['email' => $request->username_or_email, 'password' => $request->password], $remember)) {
+        // Cari user berdasarkan username atau email
+        $user = User::where('username', $request->username_or_email)
+                    ->orWhere('email', $request->username_or_email)
+                    ->first();
 
-            // Ambil data user yang sedang login
-            $user = Auth::user();
-
-            // Redirect sesuai role
-            return $user->role == 'admin' ? redirect()->route('admin.dashboard') 
-                : redirect()->route('kasir.dashboard');
+        // Jika user ditemukan, coba login
+        if ($user && Auth::attempt(['email' => $user->email, 'password' => $request->password], $remember)) {
+            return redirect()->intended($user->role == 'admin' ? route('admin.dashboard') : route('kasir.sales'));
         }
 
         // Jika login gagal
@@ -60,15 +58,23 @@ class LoginController extends Controller
     }
 
 
-    // Proses logout
+    
     public function logout(Request $request)
     {
+        // Hapus remember_token dari database
+        if (Auth::check()) {
+            $user = Auth::user();
+            $user->remember_token = null;
+            $user->save();
+        }
+    
         Auth::logout(); // Logout pengguna
-
+    
         $request->session()->invalidate(); // Hapus sesi
         $request->session()->regenerateToken(); // Regenerasi token CSRF
-
+    
         return redirect('/login');
     }
+    
 
 }

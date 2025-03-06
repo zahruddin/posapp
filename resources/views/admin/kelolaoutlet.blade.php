@@ -82,9 +82,9 @@
                                 <a href="{{ route('admin.dashboardOutlet', ['id' => $outlet->id]) }}" class="btn btn-sm btn-primary d-flex align-items-center">
                                     <i class="bi bi-bar-chart me-2"></i> Dashboard
                                 </a>
-                                <button class="btn btn-sm btn-danger d-flex align-items-center">
-                                    <i class="bi bi-trash me-2"></i> Hapus
-                                </button>
+                                <button class="btn btn-danger btn-sm deleteOutlet" data-id="{{ $outlet->id }}">
+                                    <i class="bi bi-trash"></i>
+                                </button>  
                             </div>
                         </div>
                     </div>
@@ -92,9 +92,67 @@
 
             </div>
             <!-- Akhir Row -->
+
+            {{-- MODAL Konfirmasi Hapus --}}
+            <div class="modal fade" id="confirmDeleteModal" tabindex="-1" aria-labelledby="confirmDeleteModalLabel" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="confirmDeleteModalLabel">Konfirmasi Hapus</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            Apakah Anda yakin ingin menghapus pengguna ini?
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" id="bataldelete" data-bs-dismiss="modal">Batal</button>
+                            <button id="confirmDeleteBtn" class="btn btn-danger">Hapus</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {{-- end modal notif konfirmasi delete --}}
         </div>
     </div>
     
      
+    @endsection
     <!--end::App Content-->
-@endsection
+    @section('scripts')
+    <script>
+        $(document).ready(function () {
+            let deleteOutlet;
+    
+            // Saat tombol hapus diklik, simpan ID user
+            $('.deleteOutlet').click(function () {
+                deleteOutlet = $(this).data('id');
+                $('#confirmDeleteModal').modal('show');
+            });
+            $('#bataldelete').click(function () {
+                $('#confirmDeleteModal').modal('hide');
+            });
+            $('.close').click(function () {
+                $('#confirmDeleteModal').modal('hide');
+            });
+    
+            // Saat tombol konfirmasi di modal diklik
+            $('#confirmDeleteBtn').click(function () {
+                $.ajax({
+                    url: "/admin/kelolaoutlet/hapusoutlet/" + deleteOutlet,
+                    type: "POST",
+                    data: {
+                        _token: "{{ csrf_token() }}" // Kirim token CSRF
+                    },
+                    // $('#confirmDeleteModal').modal('hide'), // Tutup modal
+                    success: function (response) {
+                        // alert(response.success); // Tampilkan pesan sukses
+                        location.reload(); // Refresh halaman
+                    },
+                    error: function (xhr) {
+                        alert(xhr.responseJSON.error); // Tampilkan error
+                    }
+                });
+            });
+        });
+    </script>
+    @endsection

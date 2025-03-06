@@ -18,14 +18,14 @@
         <!--begin::Primary Meta Tags-->
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <meta name="title" content="TrackBooth" />
-        <meta name="author" content="ColorlibHQ" />
+        <meta name="author" content="Zahruddin Fanani" />
         <meta
         name="description"
-        content="AdminLTE is a Free Bootstrap 5 Admin Dashboard, 30 example pages using Vanilla JS."
+        content="POSAPP"
         />
         <meta
         name="keywords"
-        content="bootstrap 5, bootstrap, bootstrap 5 admin dashboard, bootstrap 5 dashboard, bootstrap 5 charts, bootstrap 5 calendar, bootstrap 5 datepicker, bootstrap 5 tables, bootstrap 5 datatable, vanilla js datatable, colorlibhq, colorlibhq dashboard, colorlibhq admin dashboard"
+        content="POSAPP"
         />
         <!--end::Primary Meta Tags-->
         <!--begin::Fonts-->
@@ -72,6 +72,7 @@
         <!-- CSS Bootstrap -->
         {{-- <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet"> --}}
         <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+        @yield('style')
     </head>
     <!--end::Head-->
     <!--begin::Body-->
@@ -89,21 +90,21 @@
                         <i class="bi bi-list"></i>
                     </a>
                     </li>
-                    <li class="nav-item d-none d-md-block"><a href="#" class="nav-link">Home</a></li>
-                    <li class="nav-item d-none d-md-block"><a href="#" class="nav-link">Contact</a></li>
+                    {{-- <li class="nav-item d-none d-md-block"><a href="#" class="nav-link">Home</a></li> --}}
+                    {{-- <li class="nav-item d-none d-md-block"><a href="#" class="nav-link">Contact</a></li> --}}
                 </ul>
                 <!--end::Start Navbar Links-->
                 <!--begin::End Navbar Links-->
                 <ul class="navbar-nav ms-auto">
                     <!--begin::Navbar Search-->
-                    <li class="nav-item">
+                    {{-- <li class="nav-item">
                     <a class="nav-link" data-widget="navbar-search" href="#" role="button">
                         <i class="bi bi-search"></i>
                     </a>
-                    </li>
+                    </li> --}}
                     <!--end::Navbar Search-->
                     <!--begin::Messages Dropdown Menu-->
-                    <li class="nav-item dropdown">
+                    {{-- <li class="nav-item dropdown">
                     <a class="nav-link" data-bs-toggle="dropdown" href="#">
                         <i class="bi bi-chat-text"></i>
                         <span class="navbar-badge badge text-bg-danger">3</span>
@@ -189,10 +190,10 @@
                         <div class="dropdown-divider"></div>
                         <a href="#" class="dropdown-item dropdown-footer">See All Messages</a>
                     </div>
-                    </li>
+                    </li> --}}
                     <!--end::Messages Dropdown Menu-->
                     <!--begin::Notifications Dropdown Menu-->
-                    <li class="nav-item dropdown">
+                    {{-- <li class="nav-item dropdown">
                     <a class="nav-link" data-bs-toggle="dropdown" href="#">
                         <i class="bi bi-bell-fill"></i>
                         <span class="navbar-badge badge text-bg-warning">15</span>
@@ -217,7 +218,7 @@
                         <div class="dropdown-divider"></div>
                         <a href="#" class="dropdown-item dropdown-footer"> See All Notifications </a>
                     </div>
-                    </li>
+                    </li> --}}
                     <!--end::Notifications Dropdown Menu-->
                     <!--begin::Fullscreen Toggle-->
                     <li class="nav-item">
@@ -228,7 +229,7 @@
                     </li>
                     <!--end::Fullscreen Toggle-->
                     <!--begin::User Menu Dropdown-->
-                    <li class="nav-item dropdown">
+                    {{-- <li class="nav-item dropdown">
                         <button class="btn btn-link nav-link dropdown-toggle d-flex align-items-center"
                             id="bd-theme" type="button" aria-expanded="false" data-bs-toggle="dropdown" data-bs-display="static">
                             <span class="theme-icon-active">
@@ -252,7 +253,7 @@
                                 </button>
                             </li>
                         </ul>
-                    </li>  
+                    </li>   --}}
                     <li class="nav-item dropdown user-menu">
                     <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">
                         <img
@@ -277,7 +278,7 @@
                         </li>
                         <!--end::User Image-->
                         <!--begin::Menu Body-->
-                        <li class="user-body">
+                        {{-- <li class="user-body">
                         <!--begin::Row-->
                         <div class="row">
                             <div class="col-4 text-center"><a href="#">Followers</a></div>
@@ -285,7 +286,7 @@
                             <div class="col-4 text-center"><a href="#">Friends</a></div>
                         </div>
                         <!--end::Row-->
-                        </li>
+                        </li> --}}
                         <!--end::Menu Body-->
                         <!--begin::Menu Footer-->
                         <li class="user-footer">
@@ -420,15 +421,39 @@
                     <!-- Menu untuk Kasir -->
                     @if(Auth::user()->role == 'kasir')
                         <li class="nav-item">
-                            <a href="#" class="nav-link active">
+                            <a href="{{ route('kasir.dashboard') }}" class="nav-link {{ request()->routeIs('kasir.dashboard') ? 'active' : '' }}">
                             <i class="nav-icon bi bi-speedometer"></i>
                             <p>
                                 Dashboard
-                                <i class="nav-arrow bi bi-chevron-right"></i>
+                            </p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="{{ route('kasir.sales') }}" class="nav-link {{ request()->routeIs('kasir.sales') ? 'active' : '' }}">
+                            <i class="nav-icon bi bi-shop"></i>
+                            <p>
+                                Halaman Kasir
+                            </p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="{{ route('kasir.datasales') }}" class="nav-link {{ request()->routeIs('kasir.datasales') ? 'active' : '' }}">
+                            <i class="nav-icon bi bi-card-list"></i>
+                            <p>
+                                Penjualan
                             </p>
                             </a>
                         </li>
                     @endif
+                    <li class="nav-item">
+                        <form action="{{ route('logout') }}" method="POST">
+                            @csrf
+                            <button type="submit" class="nav-link btn btn-link text-start w-100">
+                                <i class="nav-icon bi bi-box-arrow-left"></i>
+                                <p>Sign Out</p>
+                            </button>
+                        </form>
+                    </li>
                     </ul>
                     <!--end::Sidebar Menu-->
                 </nav>

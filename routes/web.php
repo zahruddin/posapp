@@ -40,6 +40,8 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
     Route::get('/admin/kelolaoutlet', [Admin\KelolaOutletController::class, 'showKelolaOutlet'])->name('admin.kelolaOutlet'); 
     Route::get('/admin/kelolaoutlet/id/{id}', [Admin\DashboardController::class, 'showDashboard'])->name('admin.dashboardOutlet');
     Route::post('/admin/kelolaoutlet/tambahoutlet', [Admin\KelolaOutletController::class, 'tambahOutlet'])->name('admin.tambahOutlet');
+    Route::post('/admin/kelolaoutlet/hapusoutlet/{id}', [Admin\KelolaOutletController::class, 'hapusOutlet'])->name('admin.deleteOutlet');
+
     // Outlet Produk
     Route::get('/admin/kelolaoutlet/id/{id}/products', [Admin\KelolaProductsController::class, 'showProducts'])->name('admin.productsOutlet');
     Route::post('/admin/kelolaUsers/tambahproduct', [Admin\KelolaUsersController::class, 'tambahUser'])->name('admin.tambahProduct'); 
@@ -56,6 +58,10 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
 });
 
 Route::middleware(['auth', 'role:kasir'])->group(function () {
-    Route::get('/kasir', function() { return redirect()->route('kasir.dashboard'); })->name('redirect.kasir.dashboard'); 
+    Route::get('/kasir', function() { return redirect()->route('kasir.sales'); })->name('redirect.kasir.sales'); 
     Route::get('/kasir/dashboard', [Kasir\DashboardController::class, 'showDashboard'])->name('kasir.dashboard');
+    Route::get('/kasir/sales', [Kasir\SalesController::class, 'showHalamanKasir'])->name('kasir.sales');
+    Route::post('/kasir/sales', [Kasir\SalesController::class, 'tambahPenjualan'])->name('kasir.sales.addsales');
+    Route::get('/kasir/datasales', [Kasir\PenjualanController::class, 'dataPenjualan'])->name('kasir.datasales');
+    Route::get('/api/products', [Kasir\SalesController::class, 'getUpdatedProducts'])->name('api.dataproduk');
 });

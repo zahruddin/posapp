@@ -36,4 +36,17 @@ class KelolaOutletController extends Controller
             return redirect()->back()->with('error', 'Gagal menambahkan outlet. Silakan coba lagi.');
         }
     }
+    public function hapusOutlet($id)
+    {
+        try {
+            $outlet = Outlet::findOrFail($id);
+
+            // Hapus outlet
+            $outlet->delete();
+            session()->flash('success', 'Outlet berhasil dihapus!');
+            return response()->json(['success' => 'Outlet berhasil dihapus!']);
+        } catch (\Exception $e) {
+            return response()->json(['error' => 'Terjadi kesalahan: ' . $e->getMessage()], 500);
+        }
+    }
 }
