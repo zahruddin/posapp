@@ -15,19 +15,30 @@ class DashboardController extends Controller
     //
     public function showDashboard(Request $request)
     {
+        // Ambil ID user yang sedang login
+        $idUser = auth()->id(); // Mendapatkan ID user yang sedang login
+
         // Ambil tanggal dari request, jika tidak ada gunakan hari ini
         $tanggal = $request->input('tanggal', Carbon::today()->toDateString());
 
-        // Total transaksi pada tanggal yang dipilih
-        $totalTransaksi = Sale::whereDate('created_at', $tanggal)->count();
+        // Total transaksi oleh user yang login pada tanggal yang dipilih
+        $totalTransaksi = Sale::where('id_user', $idUser)
+            ->whereDate('created_at', $tanggal)
+            ->count();
 
-        // Total item terjual pada tanggal yang dipilih
-        $totalItemTerjual = SalesDetail::whereDate('created_at', $tanggal)->sum('jumlah');
+        // Total item terjual oleh user yang login pada tanggal yang dipilih
+        $totalItemTerjual = SalesDetail::whereHas('sale', function ($query) use ($idUser, $tanggal) {
+            $query->where('id_user', $idUser)
+                ->whereDate('created_at', $tanggal);
+        })->sum('jumlah');
 
-        // Total pendapatan pada tanggal yang dipilih
-        $totalPendapatan = Sale::whereDate('created_at', $tanggal)->sum('total_harga');
-
+        // Total pendapatan oleh user yang login pada tanggal yang dipilih
+        $totalPendapatan = Sale::where('id_user', $idUser)
+            ->whereDate('created_at', $tanggal)
+            ->sum('total_harga');
 
         return view('kasir.dashboard', compact('totalTransaksi', 'totalItemTerjual', 'totalPendapatan', 'tanggal'));
     }
+
+    
 }
