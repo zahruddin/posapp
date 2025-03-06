@@ -122,7 +122,7 @@ class SalesController extends Controller
             ]);
     
             DB::commit();
-    
+            // session()->flash('success', 'Penjualan berhasil disimpan!');
             return response()->json([
                 'message' => 'Penjualan berhasil disimpan!',
                 'total'   => $jumlahBayar

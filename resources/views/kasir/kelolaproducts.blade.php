@@ -1,18 +1,6 @@
 @extends('layouts.app')
-
-@section('title', 'Kelola Produk Admin | TrackBooth')
-
-@if(isset($outlet) && !empty($outlet->nama_outlet))
-    @section('page', "Kelola Produk Outlet $outlet->nama_outlet")
-
-    @push('outlet')
-        / {{ $outlet->nama_outlet }} 
-    @endpush
-@else
+@section('title', 'Kelola Produk | TrackBooth')
 @section('page', 'Kelola Produk')
-@endif
-
-
 @section('content')
 <div class="app-content">
     <div class="container-fluid">

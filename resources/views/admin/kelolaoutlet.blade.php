@@ -49,48 +49,55 @@
             <!-- Akhir Modal -->
     
             <!-- Row untuk menampilkan daftar outlet -->
-            <div class="row g-3">
+            <div class="row">
                 @php
                     $colors = ['primary', 'success', 'warning', 'danger', 'info', 'secondary'];
                 @endphp
+            
                 @foreach($outlets as $index => $outlet)
                     @php
-                        $color = $colors[$index % count($colors)]; // Ambil warna berdasarkan indeks
+                        $color = $colors[$index % count($colors)];
                     @endphp
-                    <div class="col-md-4">
-                        <div class="card shadow-sm">
-                            <!-- Card Header dengan warna dinamis -->
+                    <div class="col-lg-4 col-md-6 mb-3">
+                        <div class="card shadow-sm border-0">
+                            <!-- Card Header -->
                             <div class="card-header bg-{{ $color }} text-white d-flex align-items-center">
-                                <h5 class="mb-0">{{ $loop->iteration }}. {{ $outlet->nama_outlet }}</h5>
-                                <div class="card-tools ms-auto">
-                                    <button type="button" class="btn btn-sm btn-light" data-lte-toggle="card-collapse">
-                                        <i class="bi bi-chevron-down"></i>
-                                    </button>
-                                </div>
+                                <h6 class="mb-0">{{ $loop->iteration }}. {{ $outlet->nama_outlet }}</h6>
+                                <button type="button" class="btn btn-sm btn-light ms-auto" data-lte-toggle="card-collapse">
+                                    <i class="bi bi-chevron-down"></i>
+                                </button>
                             </div>
-                        
-                            <!-- Card Body (Collapsible) -->
-                            <div class="card-body">
-                                <p><i class="bi bi-geo-alt"></i> <strong>Alamat:</strong> {{ $outlet->alamat_outlet }}</p>
-                                <p><i class="bi bi-cash-stack"></i> <strong>Total Pendapatan:</strong> Rp5.000.000</p> 
-                                <p><i class="bi bi-receipt"></i> <strong>Jumlah Transaksi:</strong> 120</p> 
-                                <p><i class="bi bi-calendar-check"></i> <strong>Bergabung Sejak:</strong> 12 Januari 2024</p> 
+            
+                            <!-- Card Body -->
+                            <div class="card-body small">
+                                <p class="mb-2"><i class="bi bi-geo-alt-fill text-muted"></i> <strong>Alamat:</strong> {{ $outlet->alamat_outlet }}</p>
+                                <p class="mb-2"><i class="bi bi-cash-stack text-muted"></i> <strong>Total Pendapatan:</strong> Rp5.000.000</p>
+                                <p class="mb-2"><i class="bi bi-receipt text-muted"></i> <strong>Jumlah Transaksi:</strong> 120</p>
+                                <p class="mb-0"><i class="bi bi-calendar-check text-muted"></i> <strong>Bergabung Sejak:</strong> 12 Januari 2024</p>
                             </div>
-                        
+            
                             <!-- Card Footer -->
-                            <div class="card-footer d-flex justify-content-end gap-2">
-                                <a href="{{ route('admin.dashboardOutlet', ['id' => $outlet->id]) }}" class="btn btn-sm btn-primary d-flex align-items-center">
-                                    <i class="bi bi-bar-chart me-2"></i> Dashboard
-                                </a>
+                            <div class="card-footer d-flex justify-content-between">
+                                <div class="btn-group">
+                                    <a href="{{ route('admin.productsOutlet', ['id' => $outlet->id]) }}" class="btn btn-outline-{{ $color }} btn-sm">
+                                        <i class="bi bi-box-seam"></i> Produk
+                                    </a>
+                                    <a href="{{ route('admin.kasirOutlet', ['id' => $outlet->id]) }}" class="btn btn-outline-{{ $color }} btn-sm">
+                                        <i class="bi bi-people"></i> User
+                                    </a>
+                                    <a href="{{ route('admin.dashboardOutlet', ['id' => $outlet->id]) }}" class="btn btn-outline-{{ $color }} btn-sm">
+                                        <i class="bi bi-speedometer2"></i> Dashboard
+                                    </a>
+                                </div>
                                 <button class="btn btn-danger btn-sm deleteOutlet" data-id="{{ $outlet->id }}">
                                     <i class="bi bi-trash"></i>
-                                </button>  
+                                </button>
                             </div>
                         </div>
                     </div>
                 @endforeach
-
             </div>
+            
             <!-- Akhir Row -->
 
             {{-- MODAL Konfirmasi Hapus --}}

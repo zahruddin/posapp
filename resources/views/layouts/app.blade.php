@@ -229,7 +229,7 @@
                     </li>
                     <!--end::Fullscreen Toggle-->
                     <!--begin::User Menu Dropdown-->
-                    {{-- <li class="nav-item dropdown">
+                    <li class="nav-item dropdown">
                         <button class="btn btn-link nav-link dropdown-toggle d-flex align-items-center"
                             id="bd-theme" type="button" aria-expanded="false" data-bs-toggle="dropdown" data-bs-display="static">
                             <span class="theme-icon-active">
@@ -247,13 +247,13 @@
                                     <i class="bi bi-moon-fill me-2"></i> Dark
                                 </button>
                             </li>
-                            <li>
+                            {{-- <li>
                                 <button type="button" class="dropdown-item d-flex align-items-center" data-bs-theme-value="auto">
                                     <i class="bi bi-circle-half me-2"></i> Auto
                                 </button>
-                            </li>
+                            </li> --}}
                         </ul>
-                    </li>   --}}
+                    </li>  
                     <li class="nav-item dropdown user-menu">
                     <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">
                         <img
@@ -441,6 +441,14 @@
                             <i class="nav-icon bi bi-card-list"></i>
                             <p>
                                 Penjualan
+                            </p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="{{ route('kasir.kelolaproduk') }}" class="nav-link {{ request()->routeIs('kasir.kelolaproduk') ? 'active' : '' }}">
+                            <i class="nav-icon bi bi-card-list"></i>
+                            <p>
+                                Kelola Produk
                             </p>
                             </a>
                         </li>

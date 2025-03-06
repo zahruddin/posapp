@@ -310,6 +310,8 @@
                 paymentModal.hide();
             }
             // Panggil fungsi untuk refresh stok produk
+            // location.reload(); // Refresh halaman
+
             updateProductStock();
         })
         .catch(error => console.error('Error:', error));

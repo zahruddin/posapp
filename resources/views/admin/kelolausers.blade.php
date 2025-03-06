@@ -3,7 +3,7 @@
 @section('title', 'Kelola Users Admin | TrackBooth')
 
 @if(isset($outlets) && !empty($outlets->nama_outlet))
-    @section('page', 'Kelola Users Outlet')
+    @section('page', "Kelola Users Outlet $outlets->nama_outlet")
     @push('outlet')
         / {{ $outlets->nama_outlet }} 
     @endpush
