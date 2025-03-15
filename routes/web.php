@@ -44,7 +44,7 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
 
     // Outlet Produk
     Route::get('/admin/kelolaoutlet/id/{id}/products', [Admin\KelolaProductsController::class, 'showProducts'])->name('admin.productsOutlet');
-    Route::post('/admin/kelolaUsers/tambahproduct', [Admin\KelolaUsersController::class, 'tambahUser'])->name('admin.tambahProduct'); 
+    Route::post('/admin/kelolaoutlet/id/{id_outlet}/tambahproduct', [Admin\KelolaProductsController::class, 'tambahProduk'])->name('admin.tambahProduct'); 
     Route::post('/admin/kelolaUsers/editproduct', [Admin\KelolaUsersController::class, 'tambahUser'])->name('admin.editProduct'); 
     Route::post('/admin/kelolaoutlet/id/{id_outlet}/products/{id_product}', [Admin\KelolaProductsController::class, 'hapusProduct'])->name('admin.deleteProduct');
     
@@ -64,5 +64,8 @@ Route::middleware(['auth', 'role:kasir'])->group(function () {
     Route::post('/kasir/sales', [Kasir\SalesController::class, 'tambahPenjualan'])->name('kasir.sales.addsales');
     Route::get('/kasir/datasales', [Kasir\PenjualanController::class, 'dataPenjualan'])->name('kasir.datasales');
     Route::get('/kasir/kelolaproduk', [Kasir\KelolaProductsController::class, 'showKelolaProduk'])->name('kasir.kelolaproduk');
+    Route::post('/kasir/kelolaproduk/tambahproduk', [Kasir\KelolaProductsController::class, 'tambahProduct'])->name('kasir.tambahProduct');
+    Route::post('/kasir/kelolaproduk/hapusproduk/{id}', [Kasir\KelolaProductsController::class, 'hapusProduct'])->name('kasir.hapusProduct');
+    Route::put('/kasir/kelolaproduk/editproduk/{id}', [Kasir\KelolaProductsController::class, 'updateProduk'])->name('kasir.updateProduk');
     Route::get('/api/products', [Kasir\SalesController::class, 'getUpdatedProducts'])->name('api.dataproduk');
 });

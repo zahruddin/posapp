@@ -9,20 +9,33 @@
           <div class="container-fluid">
             @php
                 use Carbon\Carbon;
-                $tanggalFormatted = Carbon::parse($tanggal)->translatedFormat('d F Y');
+                $startDateFormatted = Carbon::parse($startDate)->translatedFormat('d F Y');
+                $endDateFormatted = Carbon::parse($endDate)->translatedFormat('d F Y');
             @endphp
 
+
             <form action="{{ route('kasir.dashboard') }}" method="GET" class="mb-3" id="filterForm">
-              <div class="row g-2">
-                  <div class="col-md-3">
-                      <input type="date" name="tanggal" id="filterTanggal" class="form-control"
-                          value="{{ request('tanggal', \Carbon\Carbon::today()->format('Y-m-d')) }}" onchange="document.getElementById('filterForm').submit();">
-                    <h2 class="form-text text-muted">Tanggal dipilih: <strong>{{ $tanggalFormatted }}</strong></h2>
-                  </div>
-                  <div class="col-md-3">
-                  </div>
-              </div>
+                <div class="row g-2">
+                    <div class="col-md-3">
+                        <label for="start_date" class="form-label">Dari Tanggal:</label>
+                        <input type="date" name="start_date" id="start_date" class="form-control"
+                            value="{{ request('start_date', \Carbon\Carbon::today()->format('Y-m-d')) }}">
+                    </div>
+                    <div class="col-md-3">
+                        <label for="end_date" class="form-label">Sampai Tanggal:</label>
+                        <input type="date" name="end_date" id="end_date" class="form-control"
+                            value="{{ request('end_date', \Carbon\Carbon::today()->format('Y-m-d')) }}">
+                    </div>
+                    <div class="col-md-3 align-self-end">
+                        <button type="submit" class="btn btn-primary">Filter</button>
+                    </div>
+                </div>
             </form>
+
+            <h2 class="form-text text-muted">
+                Menampilkan data dari: <strong>{{ $startDateFormatted }}</strong> 
+                hingga <strong>{{ $endDateFormatted }}</strong>
+            </h2>
             <div class="row">
                 <!-- Card Total Transaksi -->
                 <div class="col-lg-4 col-md-6 col-12">
@@ -59,13 +72,44 @@
                         </a>
                     </div>
                 </div>
-            
                 <!-- Card Total Pendapatan -->
                 <div class="col-lg-4 col-md-6 col-12">
                     <div class="small-box text-bg-warning">
                         <div class="inner">
                             <h3>Rp {{ number_format($totalPendapatan, 0, ',', '.') }}</h3>
                             <p>Total Pendapatan</p>
+                        </div>
+                        <svg class="small-box-icon" fill="currentColor" viewBox="0 0 24 24"
+                            xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                            <path d="M12 1.5a10.5 10.5 0 100 21 10.5 10.5 0 000-21zm0 19.5a9 9 0 110-18 9 9 0 010 18zm0-13.5a4.5 4.5 0 100 9 4.5 4.5 0 000-9zm0 7.5a3 3 0 110-6 3 3 0 010 6z">
+                            </path>
+                        </svg>
+                        <a href="{{ route('kasir.datasales')}}" class="small-box-footer link-light link-underline-opacity-0 link-underline-opacity-50-hover">
+                            More info <i class="bi bi-link-45deg"></i>
+                        </a>
+                    </div>
+                </div>
+                <div class="col-lg-4 col-md-6 col-12">
+                    <div class="small-box text-bg-secondary">
+                        <div class="inner">
+                            <h3>Rp {{ number_format($totalPendapatanCash, 0, ',', '.') }}</h3>
+                            <p>Cash</p>
+                        </div>
+                        <svg class="small-box-icon" fill="currentColor" viewBox="0 0 24 24"
+                            xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                            <path d="M12 1.5a10.5 10.5 0 100 21 10.5 10.5 0 000-21zm0 19.5a9 9 0 110-18 9 9 0 010 18zm0-13.5a4.5 4.5 0 100 9 4.5 4.5 0 000-9zm0 7.5a3 3 0 110-6 3 3 0 010 6z">
+                            </path>
+                        </svg>
+                        <a href="{{ route('kasir.datasales')}}" class="small-box-footer link-light link-underline-opacity-0 link-underline-opacity-50-hover">
+                            More info <i class="bi bi-link-45deg"></i>
+                        </a>
+                    </div>
+                </div>
+                <div class="col-lg-4 col-md-6 col-12">
+                    <div class="small-box text-bg-info">
+                        <div class="inner">
+                            <h3>Rp {{ number_format($totalPendapatanQris, 0, ',', '.') }}</h3>
+                            <p>Qris</p>
                         </div>
                         <svg class="small-box-icon" fill="currentColor" viewBox="0 0 24 24"
                             xmlns="http://www.w3.org/2000/svg" aria-hidden="true">

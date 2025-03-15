@@ -114,57 +114,7 @@
         
            
         <!-- /.TABEL card -->
-        {{-- MODAL Tambah Produk --}}
-        <div class="modal fade" id="modalTambahProduct" tabindex="-1" aria-labelledby="modalTambahProductLabel" aria-hidden="true">
-            <div class="modal-dialog modal-dialog-centered">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title" id="modalTambahProductLabel">Tambah Produk</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                    </div>
-                    <form action="{{ route('admin.tambahProduct') }}" method="POST" enctype="multipart/form-data">
-                        @csrf
-                        <div class="modal-body">
-                            <div class="mb-3">
-                                <label for="nama_produk" class="form-label">Nama Produk</label>
-                                <input type="text" class="form-control" name="nama_produk" required>
-                            </div>
-                            <div class="mb-3">
-                                <label for="harga_produk" class="form-label">Harga</label>
-                                <input type="number" class="form-control" name="harga_produk" required>
-                            </div>
-                            <div class="mb-3">
-                                <label for="stok_produk" class="form-label">Stok</label>
-                                <input type="number" class="form-control" name="stok_produk" required>
-                            </div>
-                            <div class="mb-3">
-                                <label for="deskripsi" class="form-label">Deskripsi</label>
-                                <textarea class="form-control" name="deskripsi" rows="3"></textarea>
-                            </div>
-                            <div class="mb-3">
-                                <label for="gambar" class="form-label">Gambar Produk</label>
-                                <input type="file" class="form-control" name="gambar" id="gambarInput" accept="image/*">
-                                <small class="text-muted">Format: JPG, PNG, JPEG (Max 2MB)</small>
-                                <div class="mt-2">
-                                    <img id="gambarPreview" src="#" alt="Preview Gambar" class="d-none rounded img-thumbnail" width="100">
-                                </div>
-                            </div>
-                            <div class="mb-3">
-                                <label for="status" class="form-label">Status</label>
-                                <select class="form-select" name="status">
-                                    <option value="aktif">Aktif</option>
-                                    <option value="nonaktif">Nonaktif</option>
-                                </select>
-                            </div>
-                        </div>
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>
-                            <button type="submit" class="btn btn-primary">Simpan</button>
-                        </div>
-                    </form>
-                </div>
-            </div>
-        </div>
+        
         {{-- MODAL Konfirmasi Hapus --}}
         <div class="modal fade" id="confirmDeleteModal" tabindex="-1" aria-labelledby="confirmDeleteModalLabel" aria-hidden="true">
             <div class="modal-dialog">

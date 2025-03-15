@@ -16,10 +16,10 @@ use Illuminate\Pagination\Paginator;
 class KelolaUsersController extends Controller
 {
     //
-    public function boot()
-    {
-        Paginator::useBootstrap();
-    }
+    // public function boot()
+    // {
+    //     Paginator::useBootstrap();
+    // }
 
     function showUsers() {
         // $users = User::all(); 

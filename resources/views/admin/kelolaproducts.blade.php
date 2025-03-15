@@ -53,12 +53,19 @@
                                     <td>{{ $no++ }}</td> {{-- Nomor akan bertambah setiap iterasi --}}
                                     <td>{{ $product->nama_produk }}</td>
                                     <td>
-                                        @if($product->gambar)
-                                            <img src="{{ asset('storage/' . $product->gambar) }}" class="img-thumbnail" width="50" height="50" alt="Produk">
+                                        @php
+                                            $gambarPath = public_path($product->gambar);
+                                            $gambarURL = file_exists($gambarPath) && !empty($product->gambar) ? asset($product->gambar) : null;
+                                        @endphp
+                                    
+                                        @if($gambarURL)
+                                            <img src="{{ $gambarURL }}" class="img-thumbnail" width="50" height="50" alt="Produk">
                                         @else
-                                            <span class="text-muted">Tidak Ada</span>
+                                            <span class="text-muted">
+                                                <i class="bi bi-image" style="font-size: 1.5rem;"></i>
+                                            </span>
                                         @endif
-                                    </td>
+                                    </td> 
                                     <td>Rp {{ number_format($product->harga_produk, 0, ',', '.') }}</td>
                                     <td>{{ $product->stok_produk }}</td>
                                     <td>{{ Str::limit($product->deskripsi, 50, '...') }}</td>
@@ -95,7 +102,7 @@
                         <h5 class="modal-title" id="modalTambahProductLabel">Tambah Produk</h5>
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
-                    <form action="{{ route('admin.tambahProduct') }}" method="POST" enctype="multipart/form-data">
+                    <form action="{{ route('admin.tambahProduct', ['id_outlet' => $outlet->id]) }}" method="POST" enctype="multipart/form-data">
                         @csrf
                         <div class="modal-body">
                             <div class="mb-3">
@@ -116,11 +123,8 @@
                             </div>
                             <div class="mb-3">
                                 <label for="gambar" class="form-label">Gambar Produk</label>
-                                <input type="file" class="form-control" name="gambar" id="gambarInput" accept="image/*">
+                                <input type="file" class="form-control" name="gambar" accept="image/*">
                                 <small class="text-muted">Format: JPG, PNG, JPEG (Max 2MB)</small>
-                                <div class="mt-2">
-                                    <img id="gambarPreview" src="#" alt="Preview Gambar" class="d-none rounded img-thumbnail" width="100">
-                                </div>
                             </div>
                             <div class="mb-3">
                                 <label for="status" class="form-label">Status</label>

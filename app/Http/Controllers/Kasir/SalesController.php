@@ -29,18 +29,23 @@ class SalesController extends Controller
     {
         // Ambil user yang sedang login
         $user = auth()->user();
-    
+
         // Pastikan user memiliki outlet yang terkait
         if (!$user->id_outlet) {
             return redirect()->back()->with('error', 'Anda tidak memiliki outlet terkait.');
         }
-    
-        // Ambil produk berdasarkan outlet dari user yang login
-        $products = Product::where('id_outlet', $user->id_outlet)->paginate(10);
-    
+
+        // Ambil hanya produk aktif berdasarkan outlet dari user yang login, urutkan berdasarkan harga terendah
+        $products = Product::where('id_outlet', $user->id_outlet)
+                            ->where('status', 'aktif') // Sesuaikan dengan nilai status yang digunakan
+                            ->orderBy('harga_produk', 'asc') // Urutkan harga dari yang terendah
+                            ->get();
+
         // Kirim data ke view
         return view('kasir.halamankasir', compact('products'));
     }
+
+    
     public function tambahPenjualan(Request $request)
     {
         $cartItems = $request->input('cart');
@@ -122,7 +127,7 @@ class SalesController extends Controller
             ]);
     
             DB::commit();
-            // session()->flash('success', 'Penjualan berhasil disimpan!');
+            session()->flash('success', 'Penjualan berhasil disimpan!');
             return response()->json([
                 'message' => 'Penjualan berhasil disimpan!',
                 'total'   => $jumlahBayar
@@ -139,9 +144,21 @@ class SalesController extends Controller
     public function getUpdatedProducts()
     {
         try {
-            // Ambil produk berdasarkan outlet user yang login
-            $products = Product::where('id_outlet', Auth::user()->id_outlet)->get();
-
+            $user = Auth::user();
+    
+            // Pastikan user memiliki outlet
+            if (!$user->id_outlet) {
+                return response()->json([
+                    'message' => 'Anda tidak memiliki outlet terkait.'
+                ], 403);
+            }
+    
+            // Ambil produk dengan filter status dan urutan harga
+            $products = Product::where('id_outlet', $user->id_outlet)
+                ->where('status', 'aktif') // Tambahkan filter status
+                ->orderBy('harga_produk', 'asc') // Tambahkan urutan harga
+                ->get();
+    
             return response()->json($products, 200);
         } catch (\Exception $e) {
             return response()->json([

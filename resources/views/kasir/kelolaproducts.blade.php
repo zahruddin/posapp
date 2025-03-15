@@ -41,12 +41,19 @@
                                     <td>{{ $no++ }}</td> {{-- Nomor akan bertambah setiap iterasi --}}
                                     <td>{{ $product->nama_produk }}</td>
                                     <td>
-                                        @if($product->gambar)
-                                            <img src="{{ asset('storage/' . $product->gambar) }}" class="img-thumbnail" width="50" height="50" alt="Produk">
+                                        @php
+                                            $gambarPath = public_path($product->gambar);
+                                            $gambarURL = file_exists($gambarPath) && !empty($product->gambar) ? asset($product->gambar) : null;
+                                        @endphp
+                                    
+                                        @if($gambarURL)
+                                            <img src="{{ $gambarURL }}" class="img-thumbnail" width="50" height="50" alt="Produk">
                                         @else
-                                            <span class="text-muted">Tidak Ada</span>
+                                            <span class="text-muted">
+                                                <i class="bi bi-image" style="font-size: 1.5rem;"></i>
+                                            </span>
                                         @endif
-                                    </td>
+                                    </td>                                    
                                     <td>Rp {{ number_format($product->harga_produk, 0, ',', '.') }}</td>
                                     <td>{{ $product->stok_produk }}</td>
                                     <td>{{ Str::limit($product->deskripsi, 50, '...') }}</td>
@@ -56,9 +63,20 @@
                                         </span>
                                     </td>
                                     <td>
-                                        <a href="{{ route('admin.editProduct', ['id' => $product->id]) }}" class="btn btn-warning btn-sm">
+                                        <a href="#" class="btn btn-warning btn-sm edit-btn" 
+                                        data-bs-toggle="modal" 
+                                        data-bs-target="#editProdukModal" 
+                                        data-id="{{ $product->id }}" 
+                                        data-nama="{{ $product->nama_produk }}" 
+                                        data-harga="{{ $product->harga_produk }}" 
+                                        data-stok="{{ $product->stok_produk }}" 
+                                        data-deskripsi="{{ $product->deskripsi }}"
+                                        data-gambar="{{ asset($product->gambar) }}"
+                                        data-status="{{ $product->status }}">
                                             <i class="bi bi-pencil-square"></i>
                                         </a>
+
+                                     
                                         <button class="btn btn-danger btn-sm deleteUser deleteProduct" data-id="{{ $product->id }}">
                                             <i class="bi bi-trash"></i>
                                         </button>                                            
@@ -83,7 +101,7 @@
                         <h5 class="modal-title" id="modalTambahProductLabel">Tambah Produk</h5>
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
-                    <form action="{{ route('admin.tambahProduct') }}" method="POST" enctype="multipart/form-data">
+                    <form action="{{ route('kasir.tambahProduct') }}" method="POST" enctype="multipart/form-data">
                         @csrf
                         <div class="modal-body">
                             <div class="mb-3">
@@ -126,6 +144,59 @@
                 </div>
             </div>
         </div>
+        {{-- MODAL UPDATE/EDIT Produk --}}
+        <div class="modal fade" id="editProdukModal" tabindex="-1" aria-labelledby="editProdukLabel" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="editProdukLabel">Tambah Produk</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <form id="editProdukForm" method="POST" enctype="multipart/form-data">
+                        @csrf
+                        @method('PUT')
+                        <input type="hidden" name="id" id="edit_id">
+                        <div class="modal-body">
+                            <div class="mb-3">
+                                <label for="edit_nama_produk" class="form-label">Nama Produk</label>
+                                <input type="text" class="form-control" id="edit_nama_produk" name="nama_produk" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="edit_harga_produk" class="form-label">Harga</label>
+                                <input type="number" class="form-control" id="edit_harga_produk" name="harga_produk" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="edit_stok_produk" class="form-label">Stok</label>
+                                <input type="number" class="form-control" id="edit_stok_produk" name="stok_produk" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="edit_deskripsi" class="form-label">Deskripsi</label>
+                                <textarea class="form-control" id="edit_deskripsi" name="deskripsi" rows="3"></textarea>
+                            </div>
+                            <div class="mb-3">
+                                <label for="edit_gambar" class="form-label">Gambar Produk</label>
+                                <input type="file" class="form-control" id="edit_gambar" name="gambar" accept="image/*">
+                                <small class="text-muted">Format: JPG, PNG, JPEG (Max 2MB)</small>
+                                <div class="mt-2">
+                                    <img id="edit_gambarPreview" src="#" alt="Preview Gambar" class="d-none rounded img-thumbnail" width="100">
+                                </div>
+                            </div>
+                            <div class="mb-3">
+                                <label for="edit_status" class="form-label">Status</label>
+                                <select class="form-select" id="edit_status" name="status">
+                                    <option value="aktif">Aktif</option>
+                                    <option value="nonaktif">Nonaktif</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>
+                            <button type="submit" class="btn btn-primary">Simpan</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>        
         {{-- MODAL Konfirmasi Hapus --}}
         <div class="modal fade" id="confirmDeleteModal" tabindex="-1" aria-labelledby="confirmDeleteModalLabel" aria-hidden="true">
             <div class="modal-dialog">
@@ -135,7 +206,7 @@
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
                     <div class="modal-body">
-                        Apakah Anda yakin ingin menghapus pengguna ini?
+                        Apakah Anda yakin ingin menghapus produk ini?
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" id="bataldelete" data-bs-dismiss="modal">Batal</button>
@@ -194,11 +265,11 @@
 
         // Saat tombol konfirmasi di modal diklik
         // let outletId = "{{ Request::segment(4) }}"; 
-        let outletId = "{{ $outlet->id }}";
+        // let outletId = "{{ $outlet->id }}";
         // console.log("ID Outlet:", idout); // Cek apakah id_outlet sudah benar
         $('#confirmDeleteBtn').click(function () {
             $.ajax({
-                url: `/admin/kelolaoutlet/id/${outletId}/products/${deleteProductId}`,
+                url: `/kasir/kelolaproduk/hapusproduk/${deleteProductId}`,
                 type: "POST",
                 data: {
                     _token: "{{ csrf_token() }}" // Kirim token CSRF
@@ -228,6 +299,57 @@
             }
             reader.readAsDataURL(input.files[0]);
         }
+    });
+</script>
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        document.querySelectorAll('.edit-btn').forEach(button => {
+            button.addEventListener('click', function () {
+                let id = this.getAttribute('data-id');
+                let nama = this.getAttribute('data-nama');
+                let harga = this.getAttribute('data-harga');
+                let stok = this.getAttribute('data-stok');
+                let deskripsi = this.getAttribute('data-deskripsi');
+                let gambar = this.getAttribute('data-gambar');
+                let status = this.getAttribute('data-status');
+
+                // Isi nilai form dengan data produk yang diklik
+                document.getElementById('edit_id').value = id;
+                document.getElementById('edit_nama_produk').value = nama;
+                document.getElementById('edit_harga_produk').value = harga;
+                document.getElementById('edit_stok_produk').value = stok;
+                document.getElementById('edit_deskripsi').value = deskripsi;
+                document.getElementById('edit_status').value = status;
+
+                // Cek dan atur preview gambar dengan benar
+                let gambarPreview = document.getElementById('edit_gambarPreview');
+                if (gambar && gambar !== "#" && gambar !== "null") {
+                    gambarPreview.src = gambar.startsWith('/storage/') || gambar.startsWith('http') ? gambar : `/storage/${gambar}`;
+                    gambarPreview.classList.remove('d-none');
+                } else {
+                    gambarPreview.classList.add('d-none');
+                    gambarPreview.src = "#"; // Reset gambar jika tidak ada
+                }
+
+                // Ubah action form untuk update produk berdasarkan ID
+                document.getElementById('editProdukForm').setAttribute('action', `/kasir/kelolaproduk/editproduk/${id}`);
+            });
+        });
+
+        // Preview gambar yang dipilih sebelum upload
+        document.getElementById('edit_gambar').addEventListener('change', function(event) {
+            let gambarPreview = document.getElementById('edit_gambarPreview');
+            let file = event.target.files[0];
+
+            if (file) {
+                let url = URL.createObjectURL(file);
+                gambarPreview.src = url;
+                gambarPreview.classList.remove('d-none');
+            } else {
+                gambarPreview.classList.add('d-none');
+                gambarPreview.src = "#"; // Reset jika tidak ada gambar
+            }
+        });
     });
 </script>
 @endsection

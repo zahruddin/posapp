@@ -17,27 +17,42 @@ class DashboardController extends Controller
     {
         // Ambil ID user yang sedang login
         $idUser = auth()->id(); // Mendapatkan ID user yang sedang login
-
+        
+        // Ambil tanggal mulai dan tanggal akhir dari input, default ke hari ini
+        $startDate = $request->input('start_date', Carbon::today()->toDateString());
+        $endDate = $request->input('end_date', Carbon::today()->toDateString());
+    
+        // Konversi ke format Carbon
+        $startDate = Carbon::parse($startDate)->startOfDay();
+        $endDate = Carbon::parse($endDate)->endOfDay();
         // Ambil tanggal dari request, jika tidak ada gunakan hari ini
-        $tanggal = $request->input('tanggal', Carbon::today()->toDateString());
+        // $tanggal = $request->input('tanggal', Carbon::today()->toDateString());
 
         // Total transaksi oleh user yang login pada tanggal yang dipilih
         $totalTransaksi = Sale::where('id_user', $idUser)
-            ->whereDate('created_at', $tanggal)
+            ->whereBetween('created_at', [$startDate, $endDate])
             ->count();
 
         // Total item terjual oleh user yang login pada tanggal yang dipilih
-        $totalItemTerjual = SalesDetail::whereHas('sale', function ($query) use ($idUser, $tanggal) {
+        $totalItemTerjual = SalesDetail::whereHas('sale', function ($query) use ($idUser, $startDate, $endDate) {
             $query->where('id_user', $idUser)
-                ->whereDate('created_at', $tanggal);
+                ->whereBetween('created_at', [$startDate, $endDate]);
         })->sum('jumlah');
 
         // Total pendapatan oleh user yang login pada tanggal yang dipilih
         $totalPendapatan = Sale::where('id_user', $idUser)
-            ->whereDate('created_at', $tanggal)
+            ->where('status_bayar', 'lunas')
+            ->whereBetween('created_at', [$startDate, $endDate])
+            ->sum('total_harga');
+        // Total pendapatan oleh user yang login pada tanggal yang dipilih
+        $totalPendapatanCash = Sale::where('id_user', $idUser)->where('metode_bayar', 'cash')->where('status_bayar', 'lunas')
+            ->whereBetween('created_at', [$startDate, $endDate])
+            ->sum('total_harga');
+        $totalPendapatanQris = Sale::where('id_user', $idUser)->where('metode_bayar', 'qris')->where('status_bayar', 'lunas')
+            ->whereBetween('created_at', [$startDate, $endDate])
             ->sum('total_harga');
 
-        return view('kasir.dashboard', compact('totalTransaksi', 'totalItemTerjual', 'totalPendapatan', 'tanggal'));
+        return view('kasir.dashboard', compact('totalTransaksi', 'totalItemTerjual', 'totalPendapatan', 'totalPendapatanCash','totalPendapatanQris','startDate', 'endDate'));
     }
 
     

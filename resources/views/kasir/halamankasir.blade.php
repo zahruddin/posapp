@@ -74,25 +74,42 @@
                             </button>
                         </div>                        
                         <div class="row g-2" id="productList">
+                            @php
+                                use Illuminate\Support\Facades\Storage;
+                            @endphp
                             @foreach($products as $product)
-                            <div class="col-6 col-md-3 col-lg-3 product-item" data-name="{{ strtolower($product->nama_produk) }}">
-                                <div class="card product-card text-center p-2" data-id="{{ $product->id }}">
-                                    <img src="https://picsum.photos/150?random={{ $product->id }}"  class="card-img-top" alt="{{ $product->nama_produk }}">
-                                    <div class="card-body d-flex flex-column justify-content-between">
-                                        <h6 class="card-title fw-bold">{{ $product->nama_produk }}</h6>
-                                        <p class="text-primary fs-6 mb-1">Rp {{ number_format($product->harga_produk, 0, ',', '.') }}</p>
-                                        <p class="text-muted small">Stok: <strong>{{ $product->stok_produk }}</strong></p>
-                                        <button class="btn btn-sm btn-success w-100 add-to-cart" 
-                                            data-id="{{ $product->id }}" 
-                                            data-name="{{ $product->nama_produk }}" 
-                                            data-price="{{ $product->harga_produk }}" 
-                                            data-stock="{{ $product->stok_produk }}" 
-                                            {{ $product->stok_produk == 0 ? 'disabled' : '' }}>
-                                            {{ $product->stok_produk == 0 ? 'Habis' : 'Tambah' }}
-                                        </button>
-                                    </div>                                        
-                                </div>
-                            </div>                            
+                                <div class="col-6 col-md-3 col-lg-3 product-item" data-name="{{ strtolower($product->nama_produk) }}">
+                                    <div class="card product-card text-center p-2" data-id="{{ $product->id }}">
+                                        @php
+                                            $gambarPath = public_path($product->gambar);
+                                            $gambarURL = file_exists($gambarPath) && !empty($product->gambar) ? asset($product->gambar) : null;
+                                        @endphp
+                                        @if($gambarURL)
+                                            <img src="{{ $gambarURL }}" class="card-img-top" alt="{{ $product->nama_produk }}" style="height: 150px;" loading="lazy">
+                                        @else
+                                            <div class="d-flex justify-content-center align-items-center" style="height: 150px; background: #f8f9fa;">
+                                                <svg width="50" height="50" fill="gray" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
+                                                    <path d="M13.002 1a1 1 0 0 1 .99.858L14 2v10a1 1 0 0 1-.883.993L13 13H3a1 1 0 0 1-.993-.883L2 12V2a1 1 0 0 1 .883-.993L3 1h10zM3 2v10h10V2H3zm4.828 3.172a3 3 0 1 1 4.244 4.244 3 3 0 0 1-4.244-4.244z"/>
+                                                </svg>
+                                            </div>
+                                        @endif
+                                    
+                                        {{-- <img src="{{ asset($product->gambar) }}"  class="card-img-top" alt="{{ $product->nama_produk }}" style="height: 150px; " loading="lazy"> --}}
+                                        <div class="card-body d-flex flex-column justify-content-between">
+                                            <h6 class="card-title fw-bold">{{ $product->nama_produk }}</h6>
+                                            <p class="text-primary fs-6 mb-1">Rp {{ number_format($product->harga_produk, 0, ',', '.') }}</p>
+                                            <p class="text-muted small">Stok: <strong>{{ $product->stok_produk }}</strong></p>
+                                            <button class="btn btn-sm btn-success w-100 add-to-cart" 
+                                                data-id="{{ $product->id }}" 
+                                                data-name="{{ $product->nama_produk }}" 
+                                                data-price="{{ $product->harga_produk }}" 
+                                                data-stock="{{ $product->stok_produk }}" 
+                                                {{ $product->stok_produk == 0 ? 'disabled' : '' }}>
+                                                {{ $product->stok_produk == 0 ? 'Habis' : 'Tambah' }}
+                                            </button>
+                                        </div>                                        
+                                    </div>
+                                </div>                            
                             @endforeach
                         </div>
                     </div>
@@ -299,60 +316,81 @@
         .then(response => response.json())
         .then(data => {
             // console.log("Response dari server:", data);
-            alert(data.message);
             localStorage.removeItem('cart');
-            cart = [];
-            renderCart();
-
             let paymentModalEl = document.getElementById('paymentModal');
             if (paymentModalEl) {
                 var paymentModal = bootstrap.Modal.getOrCreateInstance(paymentModalEl);
                 paymentModal.hide();
             }
+            cart = [];
+            location.reload();
+            // alert(data.message);
+            // renderCart();
+
             // Panggil fungsi untuk refresh stok produk
             // location.reload(); // Refresh halaman
 
-            updateProductStock();
+            // updateProductStock();
         })
         .catch(error => console.error('Error:', error));
     });
     // Fungsi untuk mengambil stok terbaru dan memperbarui tampilan produk
     function updateProductStock() {
-        fetch('/api/products')  // Pastikan endpoint ini mengembalikan daftar produk terbaru
+        fetch('/api/products') // Pastikan endpoint ini mengembalikan daftar produk terbaru
             .then(response => response.json())
             .then(products => {
                 let productList = document.getElementById('productList');
                 productList.innerHTML = ''; // Kosongkan list
 
                 products.forEach(product => {
+                    // Format harga dengan pemisah ribuan
+                    const formattedPrice = new Intl.NumberFormat('id-ID').format(product.harga_produk);
+
+                    // Handle gambar (gunakan placeholder jika tidak ada gambar)
+                    const imageSrc = product.gambar 
+                        ? `/storage/${product.gambar}` // Gunakan path dari database
+                        : '/img/no-image.jpg'; // Placeholder jika gambar tidak ada
+
+                    // Cek stok untuk tombol
+                    const stockStatus = product.stok_produk > 0 ? 'Tambah' : 'Habis';
+                    const disabledAttr = product.stok_produk > 0 ? '' : 'disabled';
+
                     let productHTML = `
                         <div class="col-6 col-md-3 col-lg-3 product-item" data-name="${product.nama_produk.toLowerCase()}">
                             <div class="card product-card text-center p-2" data-id="${product.id}">
-                                <img src="https://picsum.photos/150?random=${product.id}" class="card-img-top" alt="${product.nama_produk}">
+                                <img src="${imageSrc}" 
+                                    class="card-img-top" 
+                                    alt="${product.nama_produk}"
+                                    style="height: 150px; object-fit: cover;">
+                                    
                                 <div class="card-body d-flex flex-column justify-content-between">
                                     <h6 class="card-title fw-bold">${product.nama_produk}</h6>
-                                    <p class="text-primary fs-6 mb-1">Rp ${new Intl.NumberFormat('id-ID').format(product.harga_produk)}</p>
+                                    <p class="text-primary fs-6 mb-1">Rp ${formattedPrice}</p>
                                     <p class="text-muted small">Stok: <strong>${product.stok_produk}</strong></p>
+                                    
                                     <button class="btn btn-sm btn-success w-100 add-to-cart" 
                                         data-id="${product.id}" 
                                         data-name="${product.nama_produk}" 
                                         data-price="${product.harga_produk}" 
-                                        data-stock="${product.stok_produk}" 
-                                        ${product.stok_produk == 0 ? 'disabled' : ''}>
-                                        ${product.stok_produk == 0 ? 'Habis' : 'Tambah'}
+                                        data-stock="${product.stok_produk}"
+                                        ${disabledAttr}>
+                                        ${stockStatus}
                                     </button>
                                 </div>                                        
                             </div>
                         </div>
                     `;
+                    
                     productList.innerHTML += productHTML;
                 });
+
+                // Re-bind event listeners untuk tombol "Tambah"
                 bindAddToCart();
-                // Pastikan tombol tambah ke keranjang tetap berfungsi setelah update
-                renderCart();
             })
             .catch(error => console.error('Gagal memperbarui stok produk:', error));
     }
+
+    // Fungsi untuk mengikat event listener ke tombol "Tambah"
     function bindAddToCart() {
         document.querySelectorAll('.add-to-cart').forEach(button => {
             button.addEventListener('click', function() {
@@ -379,6 +417,32 @@
             });
         });
     }
+    // function bindAddToCart() {
+    //     document.querySelectorAll('.add-to-cart').forEach(button => {
+    //         button.addEventListener('click', function() {
+    //             let id = this.dataset.id;
+    //             let name = this.dataset.name;
+    //             let price = parseInt(this.dataset.price);
+    //             let stock = parseInt(this.dataset.stock);
+    //             let existingItem = cart.find(item => item.id === id);
+
+    //             if (existingItem) {
+    //                 if (existingItem.qty < stock) {
+    //                     existingItem.qty++;
+    //                 } else {
+    //                     alert('Stok tidak mencukupi!');
+    //                     return;
+    //                 }
+    //             } else {
+    //                 cart.push({ id, name, price, qty: 1, stock });
+    //             }
+
+    //             localStorage.setItem('cart', JSON.stringify(cart));
+    //             renderCart();
+    //             document.getElementById('cartContainer').classList.remove('d-none');
+    //         });
+    //     });
+    // }
 
 
     renderCart();
