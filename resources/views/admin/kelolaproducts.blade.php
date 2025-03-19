@@ -75,7 +75,16 @@
                                         </span>
                                     </td>
                                     <td>
-                                        <a href="{{ route('admin.editProduct', ['id' => $product->id]) }}" class="btn btn-warning btn-sm">
+                                        <a href="#" class="btn btn-warning btn-sm edit-btn" 
+                                        data-bs-toggle="modal" 
+                                        data-bs-target="#editProdukModal" 
+                                        data-id="{{ $product->id }}" 
+                                        data-nama="{{ $product->nama_produk }}" 
+                                        data-harga="{{ $product->harga_produk }}" 
+                                        data-stok="{{ $product->stok_produk }}" 
+                                        data-deskripsi="{{ $product->deskripsi }}"
+                                        data-gambar="{{ asset($product->gambar) }}"
+                                        data-status="{{ $product->status }}">
                                             <i class="bi bi-pencil-square"></i>
                                         </a>
                                         <button class="btn btn-danger btn-sm deleteUser deleteProduct" data-id="{{ $product->id }}">
@@ -123,8 +132,11 @@
                             </div>
                             <div class="mb-3">
                                 <label for="gambar" class="form-label">Gambar Produk</label>
-                                <input type="file" class="form-control" name="gambar" accept="image/*">
+                                <input type="file" class="form-control" name="gambar" id="gambarInput" accept="image/*">
                                 <small class="text-muted">Format: JPG, PNG, JPEG (Max 2MB)</small>
+                                <div class="mt-2">
+                                    <img id="gambarPreview" src="#" alt="Preview Gambar" class="d-none rounded img-thumbnail" width="100">
+                                </div>
                             </div>
                             <div class="mb-3">
                                 <label for="status" class="form-label">Status</label>
@@ -142,6 +154,59 @@
                 </div>
             </div>
         </div>
+        {{-- MODAL UPDATE/EDIT Produk --}}
+        <div class="modal fade" id="editProdukModal" tabindex="-1" aria-labelledby="editProdukLabel" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="editProdukLabel">Update Produk</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <form id="editProdukForm" method="POST" enctype="multipart/form-data">
+                        @csrf
+                        @method('PUT')
+                        <input type="hidden" name="id" id="edit_id">
+                        <div class="modal-body">
+                            <div class="mb-3">
+                                <label for="edit_nama_produk" class="form-label">Nama Produk</label>
+                                <input type="text" class="form-control" id="edit_nama_produk" name="nama_produk" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="edit_harga_produk" class="form-label">Harga</label>
+                                <input type="number" class="form-control" id="edit_harga_produk" name="harga_produk" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="edit_stok_produk" class="form-label">Stok</label>
+                                <input type="number" class="form-control" id="edit_stok_produk" name="stok_produk" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="edit_deskripsi" class="form-label">Deskripsi</label>
+                                <textarea class="form-control" id="edit_deskripsi" name="deskripsi" rows="3"></textarea>
+                            </div>
+                            <div class="mb-3">
+                                <label for="edit_gambar" class="form-label">Gambar Produk</label>
+                                <input type="file" class="form-control" id="edit_gambar" name="gambar" accept="image/*">
+                                <small class="text-muted">Format: JPG, PNG, JPEG (Max 2MB)</small>
+                                <div class="mt-2">
+                                    <img id="edit_gambarPreview" src="#" alt="Preview Gambar" class="d-none rounded img-thumbnail" width="100">
+                                </div>
+                            </div>
+                            <div class="mb-3">
+                                <label for="edit_status" class="form-label">Status</label>
+                                <select class="form-select" id="edit_status" name="status">
+                                    <option value="aktif">Aktif</option>
+                                    <option value="nonaktif">Nonaktif</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>
+                            <button type="submit" class="btn btn-primary">Simpan</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>        
         {{-- MODAL Konfirmasi Hapus --}}
         <div class="modal fade" id="confirmDeleteModal" tabindex="-1" aria-labelledby="confirmDeleteModalLabel" aria-hidden="true">
             <div class="modal-dialog">
@@ -151,7 +216,7 @@
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
                     <div class="modal-body">
-                        Apakah Anda yakin ingin menghapus pengguna ini?
+                        Apakah Anda yakin ingin menghapus produk ini?
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" id="bataldelete" data-bs-dismiss="modal">Batal</button>
@@ -244,6 +309,60 @@
             }
             reader.readAsDataURL(input.files[0]);
         }
+    });
+</script>
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        document.querySelectorAll('.edit-btn').forEach(button => {
+            button.addEventListener('click', function () {
+                let id_outlet = "{{ $outlet->id }}";
+                let id_product = this.getAttribute('data-id');
+                let nama = this.getAttribute('data-nama');
+                let harga = this.getAttribute('data-harga');
+                let stok = this.getAttribute('data-stok');
+                let deskripsi = this.getAttribute('data-deskripsi');
+                let gambar = this.getAttribute('data-gambar');
+                let status = this.getAttribute('data-status');
+
+                // Isi nilai form dengan data produk yang diklik
+                document.getElementById('edit_id').value = id_product;
+                document.getElementById('edit_nama_produk').value = nama;
+                document.getElementById('edit_harga_produk').value = harga;
+                document.getElementById('edit_stok_produk').value = stok;
+                document.getElementById('edit_deskripsi').value = deskripsi;
+                document.getElementById('edit_status').value = status;
+
+                // Cek dan atur preview gambar dengan benar
+                let gambarPreview = document.getElementById('edit_gambarPreview');
+                if (gambar && gambar !== "#" && gambar !== "null") {
+                    gambarPreview.src = gambar.startsWith('/storage/') || gambar.startsWith('http') ? gambar : `/storage/${gambar}`;
+                    gambarPreview.classList.remove('d-none');
+                } else {
+                    gambarPreview.classList.add('d-none');
+                    gambarPreview.src = "#"; // Reset gambar jika tidak ada
+                }
+                console.log("Form action:", document.getElementById('editProdukForm').getAttribute('action'));
+console.log("Form method:", document.getElementById('editProdukForm').getAttribute('method'));
+
+                // Ubah action form untuk update produk berdasarkan ID
+                document.getElementById('editProdukForm').setAttribute('action', `/admin/kelolaoutlet/products/update/${id_product}`);
+            });
+        });
+
+        // Preview gambar yang dipilih sebelum upload
+        document.getElementById('edit_gambar').addEventListener('change', function(event) {
+            let gambarPreview = document.getElementById('edit_gambarPreview');
+            let file = event.target.files[0];
+
+            if (file) {
+                let url = URL.createObjectURL(file);
+                gambarPreview.src = url;
+                gambarPreview.classList.remove('d-none');
+            } else {
+                gambarPreview.classList.add('d-none');
+                gambarPreview.src = "#"; // Reset jika tidak ada gambar
+            }
+        });
     });
 </script>
 @endsection

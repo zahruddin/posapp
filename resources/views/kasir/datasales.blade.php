@@ -103,7 +103,7 @@
                 </div>
                 <!-- Pagination -->
                 <div class="d-flex justify-content-end mt-3">
-                    {{ $sales->links('vendor.pagination.bootstrap-5') }}
+                    {{ $sales->appends(request()->query())->links('vendor.pagination.bootstrap-5') }}
                 </div>
             </div>
         

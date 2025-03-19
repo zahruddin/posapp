@@ -49,4 +49,21 @@ class KelolaOutletController extends Controller
             return response()->json(['error' => 'Terjadi kesalahan: ' . $e->getMessage()], 500);
         }
     }
+    public function updateOutlet(Request $request, $id)
+    {
+        $request->validate([
+            'nama_outlet' => 'required|string|max:255',
+            'alamat_outlet' => 'required|string|max:255',
+        ]);
+
+        $outlet = Outlet::findOrFail($id);
+
+        // Update data outlet 
+        $outlet->update([
+            'nama_outlet' => $request->nama_outlet,
+            'alamat_outlet' => $request->alamat_outlet,
+        ]);
+
+        return redirect()->back()->with('success', 'Outlet berhasil diperbarui.');
+    }
 }

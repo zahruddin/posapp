@@ -32,11 +32,11 @@ class KelolaProductsController extends Controller
         // Kirim data ke view
         return view('admin.kelolaproducts', compact('products', 'outlet'));
     }
-    public function hapusProduct($id_outlet, $id)
+    public function hapusProduct($id_outlet, $id_product)
     {
         try {
             // Cari produk berdasarkan id_outlet dan id
-            $product = Product::where('id_outlet', $id_outlet)->where('id', $id)->firstOrFail();
+            $product = Product::where('id_outlet', $id_outlet)->where('id', $id_product)->firstOrFail();
     
             // Hapus produk
             $product->delete();
@@ -84,5 +84,48 @@ class KelolaProductsController extends Controller
 
         return redirect()->back()->with('success', 'Produk berhasil ditambahkan!');
     }
+    
+    public function updateProduct(Request $request, $id_product)
+    {
+        $request->validate([
+            'nama_produk' => 'required|string|max:255',
+            'harga_produk' => 'required|numeric|min:0',
+            'stok_produk' => 'required|integer|min:0',
+            'deskripsi' => 'nullable|string',
+            'gambar' => 'nullable|image|mimes:jpg,png,jpeg|max:2048',
+            'status' => 'required|in:aktif,nonaktif',
+        ]);
 
+        $produk = Product::findOrFail($id_product);
+
+        // Simpan gambar baru jika ada
+        if ($request->hasFile('gambar')) {
+            // Hapus gambar lama jika ada
+            if ($produk->gambar && file_exists(public_path($produk->gambar))) {
+                unlink(public_path($produk->gambar));
+            }
+
+            // Simpan gambar baru ke `storage/app/public/gambar_produk/`
+            $file = $request->file('gambar');
+            $namaFile = time() . '_' . $file->getClientOriginalName();
+            $file->storeAs('public/gambar_produk', $namaFile);
+
+            // Path gambar untuk disimpan di database (agar bisa diakses via `storage/`)
+            $gambarPath = "storage/gambar_produk/" . $namaFile;
+
+            // Perbarui gambar di database
+            $produk->gambar = $gambarPath;
+        }
+
+        // Update data produk tanpa mengganti gambar jika tidak ada gambar baru
+        $produk->update([
+            'nama_produk' => $request->nama_produk,
+            'harga_produk' => $request->harga_produk,
+            'stok_produk' => $request->stok_produk,
+            'deskripsi' => $request->deskripsi,
+            'status' => $request->status,
+        ]);
+
+        return redirect()->back()->with('success', 'Produk berhasil diperbarui.');
+    }
 }

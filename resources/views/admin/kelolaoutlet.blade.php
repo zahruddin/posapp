@@ -17,7 +17,58 @@
                     <i class="bi bi-plus-lg"></i> Tambah Outlet
                 </button>
             </div>
-    
+            <div class="table-responsive">
+                <table id="outletTable" class="table">
+                    <thead class="">
+                        <tr>
+                            <th>#</th>
+                            <th>Nama Outlet</th>
+                            <th>Alamat</th>
+                            <th>Ditambahkan pada</th>
+                            <th>Kelola</th>
+                            <th>Aksi</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach($outlets as $index => $outlet)
+                        <tr>
+                            <td>{{ $loop->iteration }}</td>
+                            <td>{{ $outlet->nama_outlet }}</td>
+                            <td>{{ $outlet->alamat_outlet }}</td>
+                            <td>{{ \Carbon\Carbon::parse($outlet->created_at)->format('d-m-Y H:i') }}</td>
+                            <td>
+                                <div class="btn-group">
+                                    <a href="{{ route('admin.dashboardOutlet', ['id' => $outlet->id]) }}" class="btn btn-outline-info btn-sm">
+                                        <i class="bi bi-speedometer2"></i><span> Dashboard</span>
+                                    </a>
+                                    <a href="{{ route('admin.productsOutlet', ['id' => $outlet->id]) }}" class="btn btn-outline-primary btn-sm">
+                                        <i class="bi bi-box-seam"></i><span> Produk</span>
+                                    </a>
+                                    <a href="{{ route('admin.kasirOutlet', ['id' => $outlet->id]) }}" class="btn btn-outline-success btn-sm">
+                                        <i class="bi bi-people"></i><span> Users</span>
+                                    </a>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="btn-group">
+                                    <a href="#" class="btn btn-warning btn-sm edit-btn" data-bs-toggle="modal" data-bs-target="#editoutletmodal" 
+                                        data-id="{{ $outlet->id }}" 
+                                        data-nama="{{ $outlet->nama_outlet }}" 
+                                        data-alamat="{{ $outlet->alamat_outlet }}">
+                                        <i class="bi bi-pencil-square"></i>
+                                    </a>
+                                    <button class="btn btn-danger btn-sm deleteOutlet" data-id="{{ $outlet->id }}">
+                                        <i class="bi bi-trash"></i>
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                        @endforeach
+                    </tbody>
+                </table>
+            </div>
+            
+            <!-- Akhir Row -->
             <!-- Modal Tambah Outlet -->
             <div class="modal fade" id="tambahoutlet" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
                 <div class="modal-dialog modal-dialog-centered">
@@ -45,61 +96,39 @@
                         </form>
                     </div>
                 </div>
-            </div>
+            </div> 
             <!-- Akhir Modal -->
-    
-            <!-- Row untuk menampilkan daftar outlet -->
-            <div class="row">
-                @php
-                    $colors = ['primary', 'success', 'warning', 'danger', 'info', 'secondary'];
-                @endphp
-            
-                @foreach($outlets as $index => $outlet)
-                    @php
-                        $color = $colors[$index % count($colors)];
-                    @endphp
-                    <div class="col-lg-4 col-md-6 mb-3">
-                        <div class="card shadow-sm border-0">
-                            <!-- Card Header -->
-                            <div class="card-header bg-{{ $color }} text-white d-flex align-items-center">
-                                <h6 class="mb-0">{{ $loop->iteration }}. {{ $outlet->nama_outlet }}</h6>
-                                <button type="button" class="btn btn-sm btn-light ms-auto" data-lte-toggle="card-collapse">
-                                    <i class="bi bi-chevron-down"></i>
-                                </button>
-                            </div>
-            
-                            <!-- Card Body -->
-                            <div class="card-body small">
-                                <p class="mb-2"><i class="bi bi-geo-alt-fill text-muted"></i> <strong>Alamat:</strong> {{ $outlet->alamat_outlet }}</p>
-                                <p class="mb-2"><i class="bi bi-cash-stack text-muted"></i> <strong>Total Pendapatan:</strong> Rp5.000.000</p>
-                                <p class="mb-2"><i class="bi bi-receipt text-muted"></i> <strong>Jumlah Transaksi:</strong> 120</p>
-                                <p class="mb-0"><i class="bi bi-calendar-check text-muted"></i> <strong>Bergabung Sejak:</strong> 12 Januari 2024</p>
-                            </div>
-            
-                            <!-- Card Footer -->
-                            <div class="card-footer d-flex justify-content-between">
-                                <div class="btn-group">
-                                    <a href="{{ route('admin.productsOutlet', ['id' => $outlet->id]) }}" class="btn btn-outline-{{ $color }} btn-sm">
-                                        <i class="bi bi-box-seam"></i> Produk
-                                    </a>
-                                    <a href="{{ route('admin.kasirOutlet', ['id' => $outlet->id]) }}" class="btn btn-outline-{{ $color }} btn-sm">
-                                        <i class="bi bi-people"></i> User
-                                    </a>
-                                    <a href="{{ route('admin.dashboardOutlet', ['id' => $outlet->id]) }}" class="btn btn-outline-{{ $color }} btn-sm">
-                                        <i class="bi bi-speedometer2"></i> Dashboard
-                                    </a>
-                                </div>
-                                <button class="btn btn-danger btn-sm deleteOutlet" data-id="{{ $outlet->id }}">
-                                    <i class="bi bi-trash"></i>
-                                </button>
-                            </div>
+            <!-- Modal EDIT Outlet -->
+            <div class="modal fade" id="editoutletmodal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="exampleModalLabel">Edit Outlet</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                         </div>
+                        <form id="editOutletForm" action="{{ route('admin.tambahOutlet') }}" method="POST">
+                            @csrf
+                            @method('PUT')
+                            <input type="hidden" name="id" id="edit_id">
+                            <div class="modal-body">
+                                <div class="mb-3">
+                                    <label for="nama_outlet" class="form-label">Nama Outlet</label>
+                                    <input type="text" class="form-control" id="edit_nama_outlet" name="nama_outlet" placeholder="Masukkan nama outlet" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="alamat_outlet" class="form-label">Alamat Outlet</label>
+                                    <input type="text" class="form-control" id="edit_alamat_outlet" name="alamat_outlet" placeholder="Masukkan alamat outlet" required>
+                                </div>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>
+                                <button type="submit" class="btn btn-primary">Simpan</button>
+                            </div>
+                        </form>
                     </div>
-                @endforeach
-            </div>
-            
-            <!-- Akhir Row -->
-
+                </div>
+            </div> 
+            <!-- Akhir Modal -->
             {{-- MODAL Konfirmasi Hapus --}}
             <div class="modal fade" id="confirmDeleteModal" tabindex="-1" aria-labelledby="confirmDeleteModalLabel" aria-hidden="true">
                 <div class="modal-dialog">
@@ -158,6 +187,25 @@
                     error: function (xhr) {
                         alert(xhr.responseJSON.error); // Tampilkan error
                     }
+                });
+            });
+        });
+    </script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            document.querySelectorAll('.edit-btn').forEach(button => {
+                button.addEventListener('click', function () {
+                    let id = this.getAttribute('data-id');
+                    let nama = this.getAttribute('data-nama');
+                    let alamat = this.getAttribute('data-alamat');
+    
+                    // Isi nilai form dengan data produk yang diklik
+                    document.getElementById('edit_id').value = id;
+                    document.getElementById('edit_nama_outlet').value = nama;
+                    document.getElementById('edit_alamat_outlet').value = alamat;
+    
+                    // Ubah action form untuk update produk berdasarkan ID
+                    document.getElementById('editOutletForm').setAttribute('action', `/admin/kelolaoutlet/editoutlet/${id}`);
                 });
             });
         });

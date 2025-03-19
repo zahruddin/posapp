@@ -41,13 +41,15 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
     Route::get('/admin/kelolaoutlet/id/{id}', [Admin\DashboardController::class, 'showDashboardOutlet'])->name('admin.dashboardOutlet');
     Route::post('/admin/kelolaoutlet/tambahoutlet', [Admin\KelolaOutletController::class, 'tambahOutlet'])->name('admin.tambahOutlet');
     Route::post('/admin/kelolaoutlet/hapusoutlet/{id}', [Admin\KelolaOutletController::class, 'hapusOutlet'])->name('admin.deleteOutlet');
+    Route::put('/admin/kelolaoutlet/editoutlet/{id}', [Admin\KelolaOutletController::class, 'updateOutlet'])->name('admin.updateOutlet');
 
     // Outlet Produk
     Route::get('/admin/kelolaoutlet/id/{id}/products', [Admin\KelolaProductsController::class, 'showProducts'])->name('admin.productsOutlet');
     Route::post('/admin/kelolaoutlet/id/{id_outlet}/tambahproduct', [Admin\KelolaProductsController::class, 'tambahProduk'])->name('admin.tambahProduct'); 
     Route::post('/admin/kelolaUsers/editproduct', [Admin\KelolaUsersController::class, 'tambahUser'])->name('admin.editProduct'); 
     Route::post('/admin/kelolaoutlet/id/{id_outlet}/products/{id_product}', [Admin\KelolaProductsController::class, 'hapusProduct'])->name('admin.deleteProduct');
-    
+    Route::put('/admin/kelolaoutlet/products/update/{id_product}', [Admin\KelolaProductsController::class, 'updateProduct'])->name('admin.updateProduct');
+     
     // outlet Users
     Route::get('/admin/kelolaoutlet/id/{id}/kasir', [Admin\KelolaUsersController::class, 'showUsersOutlet'])->name('admin.kasirOutlet');
 
