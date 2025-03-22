@@ -47,6 +47,9 @@
                                     <a href="{{ route('admin.kasirOutlet', ['id' => $outlet->id]) }}" class="btn btn-outline-success btn-sm">
                                         <i class="bi bi-people"></i><span> Users</span>
                                     </a>
+                                    <a href="{{ route('admin.datasales', ['id' => $outlet->id]) }}" class="btn btn-outline-success btn-sm">
+                                        <i class="bi bi-people"></i><span> Penjualan</span>
+                                    </a>
                                 </div>
                             </td>
                             <td>

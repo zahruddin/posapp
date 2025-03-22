@@ -42,14 +42,16 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
     Route::post('/admin/kelolaoutlet/tambahoutlet', [Admin\KelolaOutletController::class, 'tambahOutlet'])->name('admin.tambahOutlet');
     Route::post('/admin/kelolaoutlet/hapusoutlet/{id}', [Admin\KelolaOutletController::class, 'hapusOutlet'])->name('admin.deleteOutlet');
     Route::put('/admin/kelolaoutlet/editoutlet/{id}', [Admin\KelolaOutletController::class, 'updateOutlet'])->name('admin.updateOutlet');
-
+    
     // Outlet Produk
     Route::get('/admin/kelolaoutlet/id/{id}/products', [Admin\KelolaProductsController::class, 'showProducts'])->name('admin.productsOutlet');
     Route::post('/admin/kelolaoutlet/id/{id_outlet}/tambahproduct', [Admin\KelolaProductsController::class, 'tambahProduk'])->name('admin.tambahProduct'); 
     Route::post('/admin/kelolaUsers/editproduct', [Admin\KelolaUsersController::class, 'tambahUser'])->name('admin.editProduct'); 
     Route::post('/admin/kelolaoutlet/id/{id_outlet}/products/{id_product}', [Admin\KelolaProductsController::class, 'hapusProduct'])->name('admin.deleteProduct');
     Route::put('/admin/kelolaoutlet/products/update/{id_product}', [Admin\KelolaProductsController::class, 'updateProduct'])->name('admin.updateProduct');
-     
+    //sales outlet
+    Route::get('/admin/kelolaoutlet/id/{id}/penjualan', [Admin\PenjualanController::class, 'dataPenjualan'])->name('admin.datasales');
+    
     // outlet Users
     Route::get('/admin/kelolaoutlet/id/{id}/kasir', [Admin\KelolaUsersController::class, 'showUsersOutlet'])->name('admin.kasirOutlet');
 
@@ -57,6 +59,7 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
     Route::get('/admin/kelolaUsers/edit', [Admin\KelolaUsersController::class, 'showUsers'])->name('admin.editUser'); 
     Route::post('/admin/kelolaUsers/hapususer/{id}', [Admin\KelolaUsersController::class, 'hapusUser'])->name('admin.deleteUser');
     Route::post('/admin/kelolaUsers/tambahuser', [Admin\KelolaUsersController::class, 'tambahUser'])->name('admin.tambahUser'); 
+    Route::put('/admin/kelolauser/update/{id}', [Admin\KelolaUsersController::class, 'updateUser'])->name('admin.updateUser'); 
 });
 
 Route::middleware(['auth', 'role:kasir'])->group(function () {

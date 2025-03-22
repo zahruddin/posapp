@@ -47,8 +47,15 @@ class DashboardController extends Controller
         $totalPendapatan = Sale::where('id_outlet', $outlet->id)
             ->whereBetween('created_at', [$startDate, $endDate])
             ->sum('total_harga');
+            // Total pendapatan oleh user yang login pada tanggal yang dipilih
+        $totalPendapatanCash = Sale::where('id_outlet', $outlet->id)->where('metode_bayar', 'cash')->where('status_bayar', 'lunas')
+        ->whereBetween('created_at', [$startDate, $endDate])
+        ->sum('total_harga');
+        $totalPendapatanQris = Sale::where('id_outlet', $outlet->id)->where('metode_bayar', 'qris')->where('status_bayar', 'lunas')
+            ->whereBetween('created_at', [$startDate, $endDate])
+            ->sum('total_harga');
     
-        return view('admin.dashboardoutlet', compact('totalTransaksi', 'totalItemTerjual', 'totalPendapatan', 'startDate', 'endDate', 'outlet'));
+        return view('admin.dashboardoutlet', compact('totalTransaksi', 'totalItemTerjual', 'totalPendapatan', 'startDate', 'endDate', 'outlet','totalPendapatanCash','totalPendapatanQris'));
     }
     
     

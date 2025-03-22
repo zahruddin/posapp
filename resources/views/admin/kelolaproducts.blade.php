@@ -341,8 +341,8 @@
                     gambarPreview.classList.add('d-none');
                     gambarPreview.src = "#"; // Reset gambar jika tidak ada
                 }
-                console.log("Form action:", document.getElementById('editProdukForm').getAttribute('action'));
-console.log("Form method:", document.getElementById('editProdukForm').getAttribute('method'));
+            //     console.log("Form action:", document.getElementById('editProdukForm').getAttribute('action'));
+            // console.log("Form method:", document.getElementById('editProdukForm').getAttribute('method'));
 
                 // Ubah action form untuk update produk berdasarkan ID
                 document.getElementById('editProdukForm').setAttribute('action', `/admin/kelolaoutlet/products/update/${id_product}`);

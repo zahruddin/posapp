@@ -415,6 +415,12 @@
                                     <p>Products</p>
                                 </a>
                             </li>
+                            <li class="nav-item {{ request()->routeIs('admin.datasales') ? 'active' : '' }}">
+                                <a href="{{ route('admin.datasales', ['id' => $outletId]) }}" class="nav-link {{ request()->routeIs('admin.datasales') ? 'active' : '' }}">
+                                    <i class="nav-icon bi bi-circle-fill"></i>
+                                    <p>Penjualan</p>
+                                </a>
+                            </li>
                         @endif
                         {{-- end outlet menu --}}
                     @endif

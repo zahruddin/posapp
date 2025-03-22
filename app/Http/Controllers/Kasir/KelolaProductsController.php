@@ -137,5 +137,4 @@ class KelolaProductsController extends Controller
         return redirect()->back()->with('success', 'Produk berhasil diperbarui.');
     }
 
-
 }

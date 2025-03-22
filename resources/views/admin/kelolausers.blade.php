@@ -52,7 +52,16 @@
                                         <a href="{{ route('admin.dashboardOutlet', ['id' => $user->id]) }}" class="btn btn-primary btn-sm">
                                             <i class="bi bi-speedometer2"></i>
                                         </a>
-                                        <a href="{{ route('admin.editUser', ['id' => $user->id]) }}" class="btn btn-warning btn-sm">
+                                        <a href="#" class="btn btn-warning btn-sm edit-btn" 
+                                        data-bs-toggle="modal" 
+                                        data-bs-target="#editusermodal" 
+                                        data-id="{{ $user->id }}" 
+                                        data-nama="{{ $user->name }}" 
+                                        data-username="{{ $user->username }}" 
+                                        data-email="{{ $user->email }}" 
+                                        data-outlet="{{ $user->id_outlet }}"
+                                        data-role="{{ $user->role }}"
+                                        >
                                             <i class="bi bi-pencil-square"></i>
                                         </a>
                                         <button class="btn btn-danger btn-sm deleteUser" data-id="{{ $user->id }}">
@@ -148,6 +157,65 @@
                 </div>
             </div>
         </div>
+        {{-- update user --}}
+        <div class="modal fade" id="editusermodal" tabindex="-1" aria-labelledby="editusermodal" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="modalUpdateUserLabel">Update User</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <form action="" method="POST">
+                        @csrf
+                        @method('PUT')
+                        <input type="hidden" name="edit_id" id="edit_id">
+                        <div class="modal-body">
+                            <div class="mb-3">
+                                <label for="edit_nama" class="form-label">Nama</label>
+                                <input type="text" class="form-control" name="edit_nama" id="edit_nama" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="edit_username" class="form-label">Username</label>
+                                <input type="text" class="form-control" name="edit_username" id="edit_username" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="edit_email" class="form-label">Email</label>
+                                <input type="email" class="form-control" name="edit_email" id="edit_email" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="edit_password" class="form-label">Password  <span class="text-secondary"><i>(kosongkan jika tidak ingin mengubah)</i></span></label>
+                                <div class="input-group">
+                                    <input type="password" class="form-control" name="edit_password" id="edit_password" placeholder="Minimal 6 karakter">
+                                    <button type="button" class="btn btn-outline-secondary" onclick="togglePasswordEdit()">
+                                        <i class="bi bi-eye" id="toggleIcon"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="mb-3">
+                                <label for="edit_role" class="form-label">Role</label>
+                                <select class="form-select" name="edit_role" id="edit_role" required onchange="toggleOutletFieldEdit()">
+                                    <option value="admin">Admin</option>
+                                    <option value="kasir" selected>Kasir</option>
+                                </select>
+                            </div>
+                            <div class="mb-3" id="outletFieldEdit">
+                                <label for="edit_id_outlet" class="form-label">Outlet</label>
+                                <select class="form-select" name="edit_id_outlet" id="edit_id_outlet">
+                                    @foreach($outlets as $outlet)
+                                        <option value="{{ $outlet->id }}">{{ $outlet->nama_outlet }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>
+                            <button type="submit" class="btn btn-primary">Simpan</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+        
         <!-- Modal Konfirmasi Hapus -->
         <div class="modal fade" id="confirmDeleteModal" tabindex="-1" aria-labelledby="confirmDeleteModalLabel" aria-hidden="true">
             <div class="modal-dialog">
@@ -279,4 +347,71 @@
         }
     }
 </script>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        document.querySelectorAll('.edit-btn').forEach(button => {
+            button.addEventListener('click', function () {
+                let id = this.getAttribute('data-id');
+                let nama = this.getAttribute('data-nama');
+                let username = this.getAttribute('data-username');
+                let email = this.getAttribute('data-email');
+                let outlet = this.getAttribute('data-outlet');
+                let role = this.getAttribute('data-role');
+
+                // Isi nilai form dengan data user yang diklik
+                document.getElementById('edit_id').value = id;
+                document.getElementById('edit_nama').value = nama;
+                document.getElementById('edit_username').value = username;
+                document.getElementById('edit_email').value = email;
+
+                // Set role dropdown
+                let roleSelect = document.getElementById('edit_role');
+                roleSelect.value = role;
+
+                // Atur nilai outlet jika bukan admin
+                let outletFieldEdit = document.getElementById('outletFieldEdit');
+                let outletSelect = document.getElementById('edit_id_outlet');
+                
+                if (role === "admin") {
+                    outletFieldEdit.style.display = "none"; // Sembunyikan field outlet
+                } else {
+                    outletFieldEdit.style.display = "block"; // Tampilkan field outlet
+                    outletSelect.value = outlet; // Set outlet sesuai user
+                }
+
+                // Ubah action form untuk update berdasarkan ID user
+                document.querySelector('#editusermodal form').setAttribute('action', `/admin/kelolauser/update/${id}`);
+            });
+        });
+
+        // Event listener untuk toggle field outlet saat role berubah
+        document.getElementById('edit_role').addEventListener('change', function () {
+            let outletFieldEdit = document.getElementById('outletFieldEdit');
+            if (this.value === "admin") {
+                outletFieldEdit.style.display = "none";
+            } else {
+                outletFieldEdit.style.display = "block";
+            }
+        });
+    });
+
+    // Fungsi untuk toggle visibility password
+    function togglePasswordEdit() {
+        let passwordInput = document.getElementById("edit_password");
+        let toggleIcon = document.getElementById("toggleIcon");
+
+        if (passwordInput.type === "password") {
+            passwordInput.type = "text";
+            toggleIcon.classList.remove("bi-eye");
+            toggleIcon.classList.add("bi-eye-slash");
+        } else {
+            passwordInput.type = "password";
+            toggleIcon.classList.remove("bi-eye-slash");
+            toggleIcon.classList.add("bi-eye");
+        }
+    }
+</script>
+
+
 @endsection
