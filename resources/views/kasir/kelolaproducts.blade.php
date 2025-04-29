@@ -13,11 +13,11 @@
         {{-- TABEL card --}}
         <div class="card">
             <div class="card-body">
-                <div class="mb-2">
+                {{-- <div class="mb-2">
                     <button type="button" class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#modalTambahProduct">
                         Tambah Product
                     </button>
-                </div>
+                </div> --}}
                 <div class="table-responsive">
                     <table class="table table-bordered table-striped">
                         <thead>
@@ -75,11 +75,9 @@
                                         data-status="{{ $product->status }}">
                                             <i class="bi bi-pencil-square"></i>
                                         </a>
-
-                                     
-                                        <button class="btn btn-danger btn-sm deleteUser deleteProduct" data-id="{{ $product->id }}">
+                                        {{-- <button class="btn btn-danger btn-sm deleteUser deleteProduct" data-id="{{ $product->id }}">
                                             <i class="bi bi-trash"></i>
-                                        </button>                                            
+                                        </button>                                             --}}
                                     </td>
                                 </tr>
                             @endforeach
@@ -94,7 +92,7 @@
         </div>
         <!-- /.TABEL card -->
         {{-- MODAL Tambah Produk --}}
-        <div class="modal fade" id="modalTambahProduct" tabindex="-1" aria-labelledby="modalTambahProductLabel" aria-hidden="true">
+        {{-- <div class="modal fade" id="modalTambahProduct" tabindex="-1" aria-labelledby="modalTambahProductLabel" aria-hidden="true">
             <div class="modal-dialog modal-dialog-centered">
                 <div class="modal-content">
                     <div class="modal-header">
@@ -143,7 +141,7 @@
                     </form>
                 </div>
             </div>
-        </div>
+        </div> --}}
         {{-- MODAL UPDATE/EDIT Produk --}}
         <div class="modal fade" id="editProdukModal" tabindex="-1" aria-labelledby="editProdukLabel" aria-hidden="true">
             <div class="modal-dialog modal-dialog-centered">
@@ -159,17 +157,17 @@
                         <div class="modal-body">
                             <div class="mb-3">
                                 <label for="edit_nama_produk" class="form-label">Nama Produk</label>
-                                <input type="text" class="form-control" id="edit_nama_produk" name="nama_produk" required>
+                                <input type="text" class="form-control" id="edit_nama_produk" name="nama_produk" readonly>
                             </div>
-                            <div class="mb-3">
+                            {{-- <div class="mb-3">
                                 <label for="edit_harga_produk" class="form-label">Harga</label>
                                 <input type="number" class="form-control" id="edit_harga_produk" name="harga_produk" required>
-                            </div>
+                            </div> --}}
                             <div class="mb-3">
                                 <label for="edit_stok_produk" class="form-label">Stok</label>
                                 <input type="number" class="form-control" id="edit_stok_produk" name="stok_produk" required>
                             </div>
-                            <div class="mb-3">
+                            {{-- <div class="mb-3">
                                 <label for="edit_deskripsi" class="form-label">Deskripsi</label>
                                 <textarea class="form-control" id="edit_deskripsi" name="deskripsi" rows="3"></textarea>
                             </div>
@@ -187,7 +185,7 @@
                                     <option value="aktif">Aktif</option>
                                     <option value="nonaktif">Nonaktif</option>
                                 </select>
-                            </div>
+                            </div> --}}
                         </div>
                         <div class="modal-footer">
                             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>
@@ -198,7 +196,7 @@
             </div>
         </div>        
         {{-- MODAL Konfirmasi Hapus --}}
-        <div class="modal fade" id="confirmDeleteModal" tabindex="-1" aria-labelledby="confirmDeleteModalLabel" aria-hidden="true">
+        {{-- <div class="modal fade" id="confirmDeleteModal" tabindex="-1" aria-labelledby="confirmDeleteModalLabel" aria-hidden="true">
             <div class="modal-dialog">
                 <div class="modal-content">
                     <div class="modal-header">
@@ -214,7 +212,7 @@
                     </div>
                 </div>
             </div>
-        </div>
+        </div> --}}
         {{-- end modal notif konfirmasi delete --}}
 
     </div>
@@ -316,20 +314,20 @@
                 // Isi nilai form dengan data produk yang diklik
                 document.getElementById('edit_id').value = id;
                 document.getElementById('edit_nama_produk').value = nama;
-                document.getElementById('edit_harga_produk').value = harga;
+                // document.getElementById('edit_harga_produk').value = harga;
                 document.getElementById('edit_stok_produk').value = stok;
-                document.getElementById('edit_deskripsi').value = deskripsi;
-                document.getElementById('edit_status').value = status;
+                // document.getElementById('edit_deskripsi').value = deskripsi;
+                // document.getElementById('edit_status').value = status;
 
                 // Cek dan atur preview gambar dengan benar
-                let gambarPreview = document.getElementById('edit_gambarPreview');
-                if (gambar && gambar !== "#" && gambar !== "null") {
-                    gambarPreview.src = gambar.startsWith('/storage/') || gambar.startsWith('http') ? gambar : `/storage/${gambar}`;
-                    gambarPreview.classList.remove('d-none');
-                } else {
-                    gambarPreview.classList.add('d-none');
-                    gambarPreview.src = "#"; // Reset gambar jika tidak ada
-                }
+                // let gambarPreview = document.getElementById('edit_gambarPreview');
+                // if (gambar && gambar !== "#" && gambar !== "null") {
+                //     gambarPreview.src = gambar.startsWith('/storage/') || gambar.startsWith('http') ? gambar : `/storage/${gambar}`;
+                //     gambarPreview.classList.remove('d-none');
+                // } else {
+                //     gambarPreview.classList.add('d-none');
+                //     gambarPreview.src = "#"; // Reset gambar jika tidak ada
+                // }
 
                 // Ubah action form untuk update produk berdasarkan ID
                 document.getElementById('editProdukForm').setAttribute('action', `/kasir/kelolaproduk/editproduk/${id}`);

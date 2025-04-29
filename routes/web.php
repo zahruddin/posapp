@@ -60,6 +60,11 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
     Route::post('/admin/kelolaUsers/hapususer/{id}', [Admin\KelolaUsersController::class, 'hapusUser'])->name('admin.deleteUser');
     Route::post('/admin/kelolaUsers/tambahuser', [Admin\KelolaUsersController::class, 'tambahUser'])->name('admin.tambahUser'); 
     Route::put('/admin/kelolauser/update/{id}', [Admin\KelolaUsersController::class, 'updateUser'])->name('admin.updateUser'); 
+    
+    // Profile
+    Route::get('/admin/profile', [Admin\ProfileController::class, 'showProfile'])->name('admin.profile'); 
+    Route::put('/admin/profile', [Admin\ProfileController::class, 'updateProfile'])->name('admin.profile.update'); 
+
 });
 
 Route::middleware(['auth', 'role:kasir'])->group(function () {
@@ -69,8 +74,10 @@ Route::middleware(['auth', 'role:kasir'])->group(function () {
     Route::post('/kasir/sales', [Kasir\SalesController::class, 'tambahPenjualan'])->name('kasir.sales.addsales');
     Route::get('/kasir/datasales', [Kasir\PenjualanController::class, 'dataPenjualan'])->name('kasir.datasales');
     Route::get('/kasir/kelolaproduk', [Kasir\KelolaProductsController::class, 'showKelolaProduk'])->name('kasir.kelolaproduk');
-    Route::post('/kasir/kelolaproduk/tambahproduk', [Kasir\KelolaProductsController::class, 'tambahProduct'])->name('kasir.tambahProduct');
-    Route::post('/kasir/kelolaproduk/hapusproduk/{id}', [Kasir\KelolaProductsController::class, 'hapusProduct'])->name('kasir.hapusProduct');
+    // Route::post('/kasir/kelolaproduk/tambahproduk', [Kasir\KelolaProductsController::class, 'tambahProduct'])->name('kasir.tambahProduct');
+    // Route::post('/kasir/kelolaproduk/hapusproduk/{id}', [Kasir\KelolaProductsController::class, 'hapusProduct'])->name('kasir.hapusProduct');
     Route::put('/kasir/kelolaproduk/editproduk/{id}', [Kasir\KelolaProductsController::class, 'updateProduk'])->name('kasir.updateProduk');
     Route::get('/api/products', [Kasir\SalesController::class, 'getUpdatedProducts'])->name('api.dataproduk');
+    Route::get('/kasir/profile', [Kasir\ProfileController::class, 'showProfileKasir'])->name('kasir.profile'); 
+
 });

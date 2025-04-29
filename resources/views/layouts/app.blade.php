@@ -290,7 +290,13 @@
                         <!--end::Menu Body-->
                         <!--begin::Menu Footer-->
                         <li class="user-footer">
-                            <a href="#" class="btn btn-default btn-flat">Profile</a>
+                            @if(Auth::user()->role == 'admin')
+                                <a href="{{ route('admin.profile') }}" class="btn btn-default btn-flat">Profile</a>
+                            @endif
+                            <!-- Menu untuk Kasir -->
+                            @if(Auth::user()->role == 'kasir')
+                                <a href="{{ route('kasir.profile') }}" class="btn btn-default btn-flat">Profile</a>
+                            @endif
                             <form action="{{ route('logout') }}" method="POST" class="d-inline">
                                 @csrf
                                 <button type="submit" class="btn btn-default btn-flat float-end">Sign Out</button>
