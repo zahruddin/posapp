@@ -368,6 +368,14 @@
                                     </p>
                             </a>
                         </li>
+                        <li class="nav-item {{ request()->routeIs('admin.kelolaUsers') ? 'active' : '' }}">
+                            <a href="{{ route('admin.log') }}" class="nav-link {{ request()->routeIs('admin.log') ? 'active' : '' }}">
+                                <i class="nav-icon bi bi-people"></i>
+                                    <p>
+                                        Log Activity
+                                    </p>
+                            </a>
+                        </li>
                         {{-- <li class="nav-item">
                             <a href="#" class="nav-link">
                             <i class="nav-icon bi bi-box-seam-fill"></i>

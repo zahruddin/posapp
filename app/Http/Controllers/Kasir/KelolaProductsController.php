@@ -8,9 +8,12 @@ use Illuminate\Support\Facades\Auth;
 use App\Models\Product;
 use App\Models\Outlet;
 use App\Models\User;
+use App\Traits\LogActivity;
+
 
 class KelolaProductsController extends Controller
 {
+    use LogActivity;
     //
     function showKelolaProduk()
     {
@@ -33,6 +36,29 @@ class KelolaProductsController extends Controller
             // Kirim data ke view
             return view('kasir.kelolaproducts', compact('products', 'outlet'));
     }
+    public function updateProduk(Request $request, $id)
+    {
+        $request->validate([
+            'stok_produk' => 'required|integer|min:0'
+        ]);
+
+        $produk = Product::findOrFail($id);
+
+        // Clone produk sebelum diubah
+        $produkOriginal = clone $produk;
+
+        // Update data produk
+        $produk->update([
+            'stok_produk' => $request->stok_produk
+        ]);
+
+        // Log perubahan dengan data original
+        $this->logActivityWithOriginal($produk, $produkOriginal, 'update');
+
+        return redirect()->back()->with('success', 'Produk berhasil diperbarui.');
+    }
+
+
     // public function tambahProduct(Request $request)
     // {
     //     $user = Auth::user();
@@ -93,48 +119,48 @@ class KelolaProductsController extends Controller
     //         return response()->json(['error' => 'Terjadi kesalahan: ' . $e->getMessage()], 500);
     //     }
     // }
-    public function updateProduk(Request $request, $id)
-    {
-        $request->validate([
-            // 'nama_produk' => 'required|string|max:255',
-            // 'harga_produk' => 'required|numeric|min:0',
-            'stok_produk' => 'required|integer|min:0'
-            // 'deskripsi' => 'nullable|string',
-            // 'gambar' => 'nullable|image|mimes:jpg,png,jpeg|max:2048',
-            // 'status' => 'required|in:aktif,nonaktif',
-        ]);
+    // public function updateProduk(Request $request, $id)
+    // {
+    //     $request->validate([
+    //         'nama_produk' => 'required|string|max:255',
+    //         'harga_produk' => 'required|numeric|min:0',
+    //         'stok_produk' => 'required|integer|min:0',
+    //         'deskripsi' => 'nullable|string',
+    //         'gambar' => 'nullable|image|mimes:jpg,png,jpeg|max:2048',
+    //         'status' => 'required|in:aktif,nonaktif',
+    //     ]);
 
-        $produk = Product::findOrFail($id);
+    //     $produk = Product::findOrFail($id);
 
-        // Simpan gambar baru jika ada
-        // if ($request->hasFile('gambar')) {
-        //     // Hapus gambar lama jika ada
-        //     if ($produk->gambar && file_exists(public_path($produk->gambar))) {
-        //         unlink(public_path($produk->gambar));
-        //     }
+    //     // Simpan gambar baru jika ada
+    //     if ($request->hasFile('gambar')) {
+    //         // Hapus gambar lama jika ada
+    //         if ($produk->gambar && file_exists(public_path($produk->gambar))) {
+    //             unlink(public_path($produk->gambar));
+    //         }
 
-        //     // Simpan gambar baru ke `storage/app/public/gambar_produk/`
-        //     $file = $request->file('gambar');
-        //     $namaFile = time() . '_' . $file->getClientOriginalName();
-        //     $file->storeAs('public/gambar_produk', $namaFile);
+    //         // Simpan gambar baru ke `storage/app/public/gambar_produk/`
+    //         $file = $request->file('gambar');
+    //         $namaFile = time() . '_' . $file->getClientOriginalName();
+    //         $file->storeAs('public/gambar_produk', $namaFile);
 
-        //     // Path gambar untuk disimpan di database (agar bisa diakses via `storage/`)
-        //     $gambarPath = "storage/gambar_produk/" . $namaFile;
+    //         // Path gambar untuk disimpan di database (agar bisa diakses via `storage/`)
+    //         $gambarPath = "storage/gambar_produk/" . $namaFile;
 
-        //     // Perbarui gambar di database
-        //     $produk->gambar = $gambarPath;
-        // }
+    //         // Perbarui gambar di database
+    //         $produk->gambar = $gambarPath;
+    //     }
 
-        // Update data produk tanpa mengganti gambar jika tidak ada gambar baru
-        $produk->update([
-            // 'nama_produk' => $request->nama_produk,
-            // 'harga_produk' => $request->harga_produk,
-            'stok_produk' => $request->stok_produk
-            // 'deskripsi' => $request->deskripsi,
-            // 'status' => $request->status,
-        ]);
+    //     // Update data produk tanpa mengganti gambar jika tidak ada gambar baru
+    //     $produk->update([
+    //         'nama_produk' => $request->nama_produk,
+    //         'harga_produk' => $request->harga_produk,
+    //         'stok_produk' => $request->stok_produk,
+    //         'deskripsi' => $request->deskripsi,
+    //         'status' => $request->status,
+    //     ]);
 
-        return redirect()->back()->with('success', 'Produk berhasil diperbarui.');
-    }
+    //     return redirect()->back()->with('success', 'Produk berhasil diperbarui.');
+    // }
 
 }

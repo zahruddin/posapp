@@ -64,7 +64,8 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
     // Profile
     Route::get('/admin/profile', [Admin\ProfileController::class, 'showProfile'])->name('admin.profile'); 
     Route::put('/admin/profile', [Admin\ProfileController::class, 'updateProfile'])->name('admin.profile.update'); 
-
+    // log
+    Route::get('/admin/log', [Admin\logActivityController::class, 'index'])->name('admin.log'); 
 });
 
 Route::middleware(['auth', 'role:kasir'])->group(function () {

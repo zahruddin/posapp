@@ -8,7 +8,7 @@
         / {{ $outlet->nama_outlet }} 
     @endpush
 @else
-@section('page', 'Kelola Produk')
+@section('page', 'Dashboard')
 @endif
 @section('style')
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
