@@ -80,5 +80,9 @@ Route::middleware(['auth', 'role:kasir'])->group(function () {
     Route::put('/kasir/kelolaproduk/editproduk/{id}', [Kasir\KelolaProductsController::class, 'updateProduk'])->name('kasir.updateProduk');
     Route::get('/api/products', [Kasir\SalesController::class, 'getUpdatedProducts'])->name('api.dataproduk');
     Route::get('/kasir/profile', [Kasir\ProfileController::class, 'showProfileKasir'])->name('kasir.profile'); 
+    Route::get('/kasir/expenses', [Kasir\ExpenseController::class, 'index'])->name('kasir.pengeluaran');
+    Route::post('/kasir/expenses', [Kasir\ExpenseController::class, 'store'])->name('kasir.expenses.store');
+    Route::put('/kasir/expenses/{id}', [Kasir\ExpenseController::class, 'update'])->name('kasir.expenses.update');
+    Route::delete('/kasir/expenses/{id}', [Kasir\ExpenseController::class, 'destroy'])->name('kasir.expenses.destroy');
 
 });

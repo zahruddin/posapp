@@ -472,6 +472,14 @@
                             </p>
                             </a>
                         </li>
+                        <li class="nav-item">
+                            <a href="{{ route('kasir.pengeluaran') }}" class="nav-link {{ request()->routeIs('kasir.pengeluaran') ? 'active' : '' }}">
+                            <i class="nav-icon bi bi-card-list"></i>
+                            <p>
+                                Pengeluaran
+                            </p>
+                            </a>
+                        </li>
                     @endif
                     <li class="nav-item">
                         <form action="{{ route('logout') }}" method="POST">
