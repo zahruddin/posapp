@@ -57,7 +57,7 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
     // pengeluaran expense
     Route::get('/admin/kelolaoutlet/id/{id}/expense', [Admin\ExpenseController::class, 'index'])->name('admin.expense');
     Route::post('/admin/kelolaoutlet/id/{id_outlet}/expense', [Admin\ExpenseController::class, 'store'])->name('admin.expenses.store');
-    Route::delete('/kasir/expenses/{id}', [Kasir\ExpenseController::class, 'destroy'])->name('kasir.expenses.destroy');
+    Route::post('/admin/expenses/id/{id_outlet}/{id_expense}', [Admin\ExpenseController::class, 'destroy'])->name('admin.expenses.destroy');
 
     Route::get('/admin/kelolaUsers', [Admin\KelolaUsersController::class, 'showUsers'])->name('admin.kelolaUsers'); 
     Route::get('/admin/kelolaUsers/edit', [Admin\KelolaUsersController::class, 'showUsers'])->name('admin.editUser'); 

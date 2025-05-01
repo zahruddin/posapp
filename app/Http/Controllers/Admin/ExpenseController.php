@@ -105,4 +105,18 @@ class ExpenseController extends Controller
 
         return back()->with('success', 'Pengeluaran berhasil ditambahkan.');
     }
+    public function destroy($id_outlet, $id_expense)
+    {
+        try {
+            // Cari produk berdasarkan id_outlet dan id
+            $expense = Expense::where('outlet_id', $id_outlet)->where('id', $id_expense)->firstOrFail();
+    
+            // Hapus produk
+            $expense->delete();
+            session()->flash('success', 'Product berhasil dihapus!');
+            return response()->json(['success' => 'Pengeluaran berhasil dihapus!']);
+        } catch (\Exception $e) {
+            return response()->json(['error' => 'Terjadi kesalahan: ' . $e->getMessage()], 500);
+        }
+    }
 }

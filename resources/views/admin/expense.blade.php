@@ -75,12 +75,9 @@
                                     <td>{{ $expense->user->name ?? '-' }}</td> {{-- Tampilkan nama kategori --}}
                                     <td>{{ \Carbon\Carbon::parse($expense->datetime)->format('d-m-Y H:i') }}</td>
                                     <td>
-                                        <button type="button" class="btn btn-danger btn-sm delete-expense" 
-                                                data-id="{{ $expense->id }}" 
-                                                data-bs-toggle="modal" 
-                                                data-bs-target="#confirmDeleteModal">
+                                        <button class="btn btn-danger btn-sm deleteExpense" data-id="{{ $expense->id }}">
                                             <i class="bi bi-trash"></i>
-                                        </button>
+                                        </button> 
                                     </td>                                    
                                 </tr>
                             @endforeach
@@ -149,29 +146,24 @@
                 </div>
             </div>
         </div>
-    
-        
+
         <!-- Modal Konfirmasi Hapus -->
         <!-- Modal Konfirmasi Hapus -->
         <div class="modal fade" id="confirmDeleteModal" tabindex="-1" aria-labelledby="confirmDeleteModalLabel" aria-hidden="true">
             <div class="modal-dialog">
-                <form id="deleteForm" method="POST">
-                    @csrf
-                    @method('DELETE')
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <h5 class="modal-title" id="confirmDeleteModalLabel">Konfirmasi Hapus</h5>
-                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                        </div>
-                        <div class="modal-body">
-                            Apakah Anda yakin ingin menghapus data ini?
-                        </div>
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
-                            <button type="submit" class="btn btn-danger">Hapus</button>
-                        </div>
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="confirmDeleteModalLabel">Konfirmasi Hapus</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
-                </form>
+                    <div class="modal-body">
+                        Apakah Anda yakin ingin menghapus Pengeluaran ini?
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" id="bataldelete" data-bs-dismiss="modal">Batal</button>
+                        <button id="confirmDeleteBtn" class="btn btn-danger">Hapus</button>
+                    </div>
+                </div>
             </div>
         </div>
 
@@ -221,14 +213,40 @@
     }
 </script>
 <script>
-    document.addEventListener('DOMContentLoaded', function () {
-        const deleteButtons = document.querySelectorAll('.delete-expense');
-        const deleteForm = document.getElementById('deleteForm');
+    $(document).ready(function () {
+        let deleteExepenseId;
 
-        deleteButtons.forEach(button => {
-            button.addEventListener('click', function () {
-                const expenseId = this.getAttribute('data-id');
-                deleteForm.setAttribute('action', `/kasir/expenses/${expenseId}`);
+        // Saat tombol hapus diklik, simpan ID user
+        $('.deleteExpense').click(function () {
+            deleteExepenseId = $(this).data('id');
+            $('#confirmDeleteModal').modal('show');
+        });
+        $('#bataldelete').click(function () {
+            $('#confirmDeleteModal').modal('hide');
+        });
+        $('.close').click(function () {
+            $('#confirmDeleteModal').modal('hide');
+        });
+
+        // Saat tombol konfirmasi di modal diklik
+        // let outletId = "{{ Request::segment(4) }}"; 
+        let outletId = "{{ $outlet->id }}";
+        // console.log("ID Outlet:", idout); // Cek apakah id_outlet sudah benar
+        $('#confirmDeleteBtn').click(function () {
+            $.ajax({
+                url: `/admin/expenses/id/${outletId}/${deleteExepenseId}`,
+                type: "POST",
+                data: {
+                    _token: "{{ csrf_token() }}" // Kirim token CSRF
+                },
+                // $('#confirmDeleteModal').modal('hide'), // Tutup modal
+                success: function (response) {
+                    // alert(response.success); // Tampilkan pesan sukses
+                    location.reload(); // Refresh halaman
+                },
+                error: function (xhr) {
+                    alert(xhr.responseJSON.error); // Tampilkan error
+                }
             });
         });
     });
