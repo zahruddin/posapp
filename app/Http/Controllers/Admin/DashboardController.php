@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use App\Models\Outlet;
 use App\Models\Sale;
 use App\Models\SalesDetail;
+use App\Models\Expense;
 use Carbon\Carbon;
 
 
@@ -39,7 +40,9 @@ class DashboardController extends Controller
         // Total pendapatan dalam rentang waktu yang dipilih
         $totalPendapatan = Sale::whereBetween('created_at', [$startDate, $endDate])
             ->sum('total_harga');
-            // Total pendapatan oleh user yang login pada tanggal yang dipilih
+        // total pengeluaran outlet
+        $totalPengeluaran = Expense::whereBetween('created_at', [$startDate, $endDate])->sum('biaya');
+        // Total pendapatan oleh user yang login pada tanggal yang dipilih
         $totalPendapatanCash = Sale::where('metode_bayar', 'cash')->where('status_bayar', 'lunas')
         ->whereBetween('created_at', [$startDate, $endDate])
         ->sum('total_harga');
@@ -67,6 +70,7 @@ class DashboardController extends Controller
             'outlet',
             'totalPendapatanCash',
             'totalPendapatanQris',
+            'totalPengeluaran',
             'tanggal',
             'totalPerHari'
         ));
