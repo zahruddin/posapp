@@ -79,7 +79,10 @@ Route::middleware(['auth', 'role:kasir'])->group(function () {
     // Route::post('/kasir/kelolaproduk/hapusproduk/{id}', [Kasir\KelolaProductsController::class, 'hapusProduct'])->name('kasir.hapusProduct');
     Route::put('/kasir/kelolaproduk/editproduk/{id}', [Kasir\KelolaProductsController::class, 'updateProduk'])->name('kasir.updateProduk');
     Route::get('/api/products', [Kasir\SalesController::class, 'getUpdatedProducts'])->name('api.dataproduk');
-    Route::get('/kasir/profile', [Kasir\ProfileController::class, 'showProfileKasir'])->name('kasir.profile'); 
+    
+    Route::get('/kasir/profile', [Kasir\ProfileController::class, 'index'])->name('kasir.profile'); 
+    Route::put('/kasir/profile', [Kasir\ProfileController::class, 'update'])->name('kasir.profile.update'); 
+
     Route::get('/kasir/expenses', [Kasir\ExpenseController::class, 'index'])->name('kasir.pengeluaran');
     Route::post('/kasir/expenses', [Kasir\ExpenseController::class, 'store'])->name('kasir.expenses.store');
     Route::put('/kasir/expenses/{id}', [Kasir\ExpenseController::class, 'update'])->name('kasir.expenses.update');
