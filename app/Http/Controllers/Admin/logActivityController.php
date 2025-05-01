@@ -5,6 +5,8 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\ActivityLog;
+use Carbon\Carbon;
+
 
 class logActivityController extends Controller
 {
@@ -13,15 +15,31 @@ class logActivityController extends Controller
     {
         $logs = ActivityLog::query();
 
-        if ($request->has('search')) {
+        // Jika tidak ada input dari user, default ke 1 bulan terakhir
+        $startDate = $request->input('start_date', Carbon::now()->subDays(30)->toDateString());
+        $endDate = $request->input('end_date', Carbon::now()->toDateString());
+
+        // Konversi ke Carbon format lengkap
+        $startDate = Carbon::parse($startDate)->startOfDay();
+        $endDate = Carbon::parse($endDate)->endOfDay();
+
+        // Filter berdasarkan rentang tanggal
+        $logs->whereBetween('created_at', [$startDate, $endDate]);
+
+        // Filter pencarian jika ada
+        if ($request->has('search') && $request->search != '') {
             $search = $request->search;
-            $logs = $logs->where('action', 'like', "%{$search}%")
-                         ->orWhere('description', 'like', "%{$search}%");
+            $logs->where(function ($query) use ($search) {
+                $query->where('action', 'like', "%{$search}%")
+                    ->orWhere('description', 'like', "%{$search}%");
+            });
         }
 
-        // Mengambil data activity log dengan relasi user untuk nama kasir
-        $logs = $logs->latest()->with('user')->paginate(10); // 'user' adalah relasi pada ActivityLog
+        // Ambil data dengan relasi user dan urutan terbaru
+        $logs = $logs->with('user')->latest()->paginate(10);
 
-        return view('admin.logActivity', compact('logs'));
+        return view('admin.logActivity', compact('logs', 'startDate', 'endDate'));
     }
+
+
 }

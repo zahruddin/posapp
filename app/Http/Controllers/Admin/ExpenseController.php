@@ -1,22 +1,22 @@
 <?php
 
-namespace App\Http\Controllers\Kasir;
+namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Models\Expense;
-use App\Models\ExpenseCategory;
 use Illuminate\Http\Request;
+use App\Models\Expense;
+use App\Models\Outlet;
+use App\Models\ExpenseCategory;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Carbon;
 
 class ExpenseController extends Controller
 {
     //
-    public function index(Request $request)
-    {
-        $user = Auth::user();
+    public function index(Request $request, $id) {
+        $outlet = Outlet::findOrFail($id);
 
-        // Ambil tanggal mulai dan akhir dari input; default ke hari ini
+        // Ambil tanggal mulai dan tanggal akhir dari input, default ke hari ini
         $startDate = $request->input('start_date', Carbon::today()->toDateString());
         $endDate = $request->input('end_date', Carbon::today()->toDateString());
 
@@ -24,23 +24,25 @@ class ExpenseController extends Controller
         $startDate = Carbon::parse($startDate)->startOfDay();
         $endDate = Carbon::parse($endDate)->endOfDay();
 
-        // Ambil data pengeluaran berdasarkan outlet user dan filter tanggal
+        $outlet = Outlet::findOrFail($id);
+        // Ambil tanggal dari request, jika tidak ada gunakan tanggal hari ini (format Y-m-d)
+        $tanggal = $request->input('tanggal', Carbon::today()->format('Y-m-d'));
+        $id = (int) $id; // Ubah ke integer sebelum query
+
         $expenses = Expense::with('category')
-                    ->where('user_id', $user->id)
+                    ->where('outlet_id', $id)
                     ->whereBetween('datetime', [$startDate, $endDate]) // Tambahkan filter tanggal
                     ->orderBy('datetime', 'desc')
                     ->paginate(10);
+        $kategori_pengeluaran = ExpenseCategory::where('outlet_id',$id)->get();
 
-        // Ambil kategori pengeluaran milik outlet user
-        $kategori_pengeluaran = ExpenseCategory::where('outlet_id', $user->id_outlet)->get();
-
-        return view('kasir.pengeluaran', compact('expenses', 'kategori_pengeluaran', 'startDate', 'endDate'));
+                    // dd($sales);
+        return view('admin.expense', compact('expenses', 'kategori_pengeluaran','tanggal' ,'outlet', 'startDate', 'endDate', 'outlet'));
     }
-
-    public function store(Request $request)
+    public function store(Request $request,  $id_outlet)
     {
         // Ambil outlet
-        $outlet_id = Auth::user()->id_outlet;
+        $outlet_id =  $id_outlet;
 
         // Validasi dasar tanpa validasi exists dulu
         $request->validate([
@@ -102,43 +104,5 @@ class ExpenseController extends Controller
         ]);
 
         return back()->with('success', 'Pengeluaran berhasil ditambahkan.');
-    }
-
-
-    // public function update(Request $request, $id)
-    // {
-    //     $expense = Expense::findOrFail($id);
-
-    //     // Pastikan user hanya bisa edit data miliknya dan outletnya
-    //     if ($expense->user_id !== Auth::id() && $expense->outlet_id !== Auth::user()->outlet_id) {
-    //         abort(403);
-    //     }
-
-    //     $request->validate([
-    //         'biaya' => 'required|numeric',
-    //         'keterangan' => 'nullable|string',
-    //         'datetime' => 'required|date',
-    //     ]);
-
-    //     $expense->update([
-    //         'biaya' => $request->biaya,
-    //         'keterangan' => $request->keterangan,
-    //         'datetime' => $request->datetime,
-    //     ]);
-
-    //     return back()->with('success', 'Pengeluaran berhasil diperbarui.');
-    // }
-
-    public function destroy($id)
-    {
-        $expense = Expense::findOrFail($id);
-
-        if ($expense->user_id !== Auth::id() && $expense->outlet_id !== Auth::user()->outlet_id) {
-            abort(403);
-        }
-
-        $expense->delete();
-
-        return back()->with('success', 'Pengeluaran berhasil dihapus.');
     }
 }

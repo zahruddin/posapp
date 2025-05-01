@@ -54,6 +54,10 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
     
     // outlet Users
     Route::get('/admin/kelolaoutlet/id/{id}/kasir', [Admin\KelolaUsersController::class, 'showUsersOutlet'])->name('admin.kasirOutlet');
+    // pengeluaran expense
+    Route::get('/admin/kelolaoutlet/id/{id}/expense', [Admin\ExpenseController::class, 'index'])->name('admin.expense');
+    Route::post('/admin/kelolaoutlet/id/{id_outlet}/expense', [Admin\ExpenseController::class, 'store'])->name('admin.expenses.store');
+    Route::delete('/kasir/expenses/{id}', [Kasir\ExpenseController::class, 'destroy'])->name('kasir.expenses.destroy');
 
     Route::get('/admin/kelolaUsers', [Admin\KelolaUsersController::class, 'showUsers'])->name('admin.kelolaUsers'); 
     Route::get('/admin/kelolaUsers/edit', [Admin\KelolaUsersController::class, 'showUsers'])->name('admin.editUser'); 
@@ -85,7 +89,7 @@ Route::middleware(['auth', 'role:kasir'])->group(function () {
 
     Route::get('/kasir/expenses', [Kasir\ExpenseController::class, 'index'])->name('kasir.pengeluaran');
     Route::post('/kasir/expenses', [Kasir\ExpenseController::class, 'store'])->name('kasir.expenses.store');
-    Route::put('/kasir/expenses/{id}', [Kasir\ExpenseController::class, 'update'])->name('kasir.expenses.update');
     Route::delete('/kasir/expenses/{id}', [Kasir\ExpenseController::class, 'destroy'])->name('kasir.expenses.destroy');
+    // Route::put('/kasir/expenses/{id}', [Kasir\ExpenseController::class, 'update'])->name('kasir.expenses.update');
 
 });

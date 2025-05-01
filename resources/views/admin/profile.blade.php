@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Dashboard Outlet | TrackBooth')
+@section('title', 'Profile | TrackBooth')
 
 @if(isset($outlet) && !empty($outlet->nama_outlet))
     @section('page', "Dashboard Outlet $outlet->nama_outlet")

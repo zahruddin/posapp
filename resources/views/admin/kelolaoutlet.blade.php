@@ -25,7 +25,7 @@
                             <th>Nama Outlet</th>
                             <th>Alamat</th>
                             <th>Ditambahkan pada</th>
-                            <th>Kelola</th>
+                            <th>Menu</th>
                             <th>Aksi</th>
                         </tr>
                     </thead>
@@ -49,6 +49,9 @@
                                     </a>
                                     <a href="{{ route('admin.datasales', ['id' => $outlet->id]) }}" class="btn btn-outline-success btn-sm">
                                         <i class="bi bi-people"></i><span> Penjualan</span>
+                                    </a>
+                                    <a href="{{ route('admin.expense', ['id' => $outlet->id]) }}" class="btn btn-outline-success btn-sm">
+                                        <i class="bi bi-people"></i><span> Pengeluaran</span>
                                     </a>
                                 </div>
                             </td>

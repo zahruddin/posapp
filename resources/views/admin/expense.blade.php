@@ -1,6 +1,17 @@
 @extends('layouts.app')
-@section('title', 'Pengeluaran | TrackBooth')
-@section('page', 'Pengeluaran')
+
+@section('title', "Data Pengeluaran $outlet->nama_outlet | TrackBooth")
+
+@if(isset($outlet) && !empty($outlet->nama_outlet))
+    @section('page', "Data Pengeluaran Outlet $outlet->nama_outlet")
+
+    @push('outlet')
+        / {{ $outlet->nama_outlet }} 
+    @endpush
+@else
+@section('page', 'Kelola Produk')
+@endif
+
 @section('content')
 <div class="app-content">
     <div class="container-fluid">
@@ -9,7 +20,7 @@
             $startDateFormatted = Carbon::parse($startDate)->translatedFormat('d F Y');
             $endDateFormatted = Carbon::parse($endDate)->translatedFormat('d F Y');
         @endphp
-        <form action="{{ route('kasir.pengeluaran') }}" method="GET" class="mb-3" id="filterForm">
+        <form action="{{ route('admin.expense', ['id' => $outlet->id]) }}" method="GET" class="mb-3" id="filterForm">
             <div class="row g-2">
                 <div class="col-md-3">
                     <label for="start_date" class="form-label">Dari Tanggal:</label>
@@ -48,7 +59,8 @@
                                 <th>No</th>
                                 <th>Biaya</th>
                                 <th>Keterangan</th>
-                                <th>Kategori</th> {{-- Tambahan --}}
+                                <th>Kategori</th> 
+                                <th>User</th> 
                                 <th>Waktu</th>
                                 <th>Aksi</th>
                             </tr>
@@ -60,6 +72,7 @@
                                     <td>Rp {{ number_format($expense->biaya, 0, ',', '.') }}</td>
                                     <td>{{ $expense->keterangan ?? '-' }}</td>
                                     <td>{{ $expense->category->nama_kategori ?? '-' }}</td> {{-- Tampilkan nama kategori --}}
+                                    <td>{{ $expense->user->name ?? '-' }}</td> {{-- Tampilkan nama kategori --}}
                                     <td>{{ \Carbon\Carbon::parse($expense->datetime)->format('d-m-Y H:i') }}</td>
                                     <td>
                                         <button type="button" class="btn btn-danger btn-sm delete-expense" 
@@ -94,7 +107,7 @@
                         <h5 class="modal-title" id="modalTambahPengeluaranLabel">Tambah Pengeluaran</h5>
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
-                    <form action="{{ route('kasir.expenses.store') }}" method="POST">
+                    <form action="{{ route('admin.expenses.store', ['id_outlet' => $outlet->id]) }}" method="POST">
                         @csrf
                         <div class="modal-body">
                             <div class="mb-3">
