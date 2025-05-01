@@ -7,8 +7,22 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Expense extends Model
 {
-    protected $fillable = ['outlet_id', 'user_id', 'expense_category_id', 'biaya', 'keterangan', 'datetime'];
+    protected static function booted()
+    {
+        static::deleted(function ($expense) {
+            if ($expense->expense_category_id) {
+                $categoryId = $expense->expense_category_id;
+                $count = Expense::where('expense_category_id', $categoryId)->count();
 
+                if ($count === 0) {
+                    \App\Models\ExpenseCategory::where('id', $categoryId)->delete();
+                }
+            }
+        });
+    }
+
+    protected $fillable = ['outlet_id', 'user_id', 'expense_category_id', 'biaya', 'keterangan', 'datetime'];
+    
     public function category()
     {
         return $this->belongsTo(ExpenseCategory::class, 'expense_category_id');
