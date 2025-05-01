@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use App\Models\Sale;
 use App\Models\User;
 use App\Models\Product;
+use App\Models\Expense;
 use App\Models\SalesDetail;
 use Carbon\Carbon;
 
@@ -51,8 +52,21 @@ class DashboardController extends Controller
         $totalPendapatanQris = Sale::where('id_user', $idUser)->where('metode_bayar', 'qris')->where('status_bayar', 'lunas')
             ->whereBetween('created_at', [$startDate, $endDate])
             ->sum('total_harga');
+        // Total pengeluaran oleh user yang login pada tanggal yang dipilih
+        $totalPengeluaran = Expense::where('user_id', $idUser)
+        ->whereBetween('datetime', [$startDate, $endDate])
+        ->sum('biaya');
 
-        return view('kasir.dashboard', compact('totalTransaksi', 'totalItemTerjual', 'totalPendapatan', 'totalPendapatanCash','totalPendapatanQris','startDate', 'endDate'));
+        return view('kasir.dashboard', compact(
+            'totalTransaksi', 
+            'totalItemTerjual', 
+            'totalPendapatan', 
+            'totalPendapatanCash',
+            'totalPendapatanQris',
+            'totalPengeluaran', 
+            'startDate', 
+            'endDate'
+        ));        
     }
 
     

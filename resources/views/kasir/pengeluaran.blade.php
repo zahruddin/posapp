@@ -4,6 +4,32 @@
 @section('content')
 <div class="app-content">
     <div class="container-fluid">
+        @php
+            use Carbon\Carbon;
+            $startDateFormatted = Carbon::parse($startDate)->translatedFormat('d F Y');
+            $endDateFormatted = Carbon::parse($endDate)->translatedFormat('d F Y');
+        @endphp
+        <form action="{{ route('kasir.pengeluaran') }}" method="GET" class="mb-3" id="filterForm">
+            <div class="row g-2">
+                <div class="col-md-3">
+                    <label for="start_date" class="form-label">Dari Tanggal:</label>
+                    <input type="date" name="start_date" id="start_date" class="form-control"
+                        value="{{ request('start_date', \Carbon\Carbon::today()->format('Y-m-d')) }}">
+                </div>
+                <div class="col-md-3">
+                    <label for="end_date" class="form-label">Sampai Tanggal:</label>
+                    <input type="date" name="end_date" id="end_date" class="form-control"
+                        value="{{ request('end_date', \Carbon\Carbon::today()->format('Y-m-d')) }}">
+                </div>
+                <div class="col-md-3 align-self-end">
+                    <button type="submit" class="btn btn-primary">Filter</button>
+                </div>
+            </div>
+        </form>
+        <h2 class="form-text text-muted">
+            Menampilkan data dari: <strong>{{ $startDateFormatted }}</strong> 
+            hingga <strong>{{ $endDateFormatted }}</strong>
+        </h2>
         {{-- ALERT --}}
         @include('components.alert')
         {{-- END ALERT --}}
@@ -36,19 +62,13 @@
                                     <td>{{ $expense->category->nama_kategori ?? '-' }}</td> {{-- Tampilkan nama kategori --}}
                                     <td>{{ \Carbon\Carbon::parse($expense->datetime)->format('d-m-Y H:i') }}</td>
                                     <td>
-                                        <a href="#" class="btn btn-warning btn-sm edit-btn"
-                                           data-bs-toggle="modal"
-                                           data-bs-target="#editExpenseModal"
-                                           data-id="{{ $expense->id }}"
-                                           data-biaya="{{ $expense->biaya }}"
-                                           data-keterangan="{{ $expense->keterangan }}"
-                                           data-datetime="{{ $expense->datetime }}">
-                                            <i class="bi bi-pencil-square"></i>
-                                        </a>
-                                        <button class="btn btn-danger btn-sm delete-expense" data-id="{{ $expense->id }}">
+                                        <button type="button" class="btn btn-danger btn-sm delete-expense" 
+                                                data-id="{{ $expense->id }}" 
+                                                data-bs-toggle="modal" 
+                                                data-bs-target="#confirmDeleteModal">
                                             <i class="bi bi-trash"></i>
                                         </button>
-                                    </td>
+                                    </td>                                    
                                 </tr>
                             @endforeach
                         </tbody>
@@ -79,7 +99,7 @@
                         <div class="modal-body">
                             <div class="mb-3">
                                 <label for="biaya" class="form-label">Biaya</label>
-                                <input type="number" class="form-control" name="biaya" required>
+                                <input type="number" class="form-control" name="biaya" max="10000000"  required>
                             </div>
         
                             <div class="mb-3">
@@ -116,81 +136,32 @@
                 </div>
             </div>
         </div>
+    
         
-        
-        {{-- update user --}}
-        <div class="modal fade" id="editusermodal" tabindex="-1" aria-labelledby="editusermodal" aria-hidden="true">
-            <div class="modal-dialog modal-dialog-centered">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title" id="modalUpdateUserLabel">Update Pengeluaran</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                    </div>
-                    <form action="" method="POST">
-                        @csrf
-                        @method('PUT')
-                        <input type="hidden" name="edit_id" id="edit_id">
-                        <div class="modal-body">
-                            <div class="mb-3">
-                                <label for="edit_nama" class="form-label">Nama</label>
-                                <input type="text" class="form-control" name="edit_nama" id="edit_nama" required>
-                            </div>
-                            <div class="mb-3">
-                                <label for="edit_username" class="form-label">Username</label>
-                                <input type="text" class="form-control" name="edit_username" id="edit_username" required>
-                            </div>
-                            <div class="mb-3">
-                                <label for="edit_email" class="form-label">Email</label>
-                                <input type="email" class="form-control" name="edit_email" id="edit_email" required>
-                            </div>
-                            <div class="mb-3">
-                                <label for="edit_password" class="form-label">Password  <span class="text-secondary"><i>(kosongkan jika tidak ingin mengubah)</i></span></label>
-                                <div class="input-group">
-                                    <input type="password" class="form-control" name="edit_password" id="edit_password" placeholder="Minimal 6 karakter">
-                                    <button type="button" class="btn btn-outline-secondary" onclick="togglePasswordEdit()">
-                                        <i class="bi bi-eye" id="toggleIcon"></i>
-                                    </button>
-                                </div>
-                            </div>
-                            <div class="mb-3">
-                                <label for="edit_role" class="form-label">Role</label>
-                                <select class="form-select" name="edit_role" id="edit_role" required onchange="toggleOutletFieldEdit()">
-                                    <option value="admin">Admin</option>
-                                    <option value="kasir" selected>Kasir</option>
-                                </select>
-                            </div>
-                            <div class="mb-3" id="outletFieldEdit">
-                                <label for="edit_id_outlet" class="form-label">Outlet</label>
-                                
-                            </div>
-                        </div>
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>
-                            <button type="submit" class="btn btn-primary">Simpan</button>
-                        </div>
-                    </form>
-                </div>
-            </div>
-        </div>
-        
+        <!-- Modal Konfirmasi Hapus -->
         <!-- Modal Konfirmasi Hapus -->
         <div class="modal fade" id="confirmDeleteModal" tabindex="-1" aria-labelledby="confirmDeleteModalLabel" aria-hidden="true">
             <div class="modal-dialog">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title" id="confirmDeleteModalLabel">Konfirmasi Hapus</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                <form id="deleteForm" method="POST">
+                    @csrf
+                    @method('DELETE')
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="confirmDeleteModalLabel">Konfirmasi Hapus</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            Apakah Anda yakin ingin menghapus data ini?
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+                            <button type="submit" class="btn btn-danger">Hapus</button>
+                        </div>
                     </div>
-                    <div class="modal-body">
-                        Apakah Anda yakin ingin menghapus data ini?
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" id="bataldelete" data-bs-dismiss="modal">Batal</button>
-                        <button id="confirmDeleteBtn" class="btn btn-danger">Hapus</button>
-                    </div>
-                </div>
+                </form>
             </div>
         </div>
+
         
         {{-- end modal notif konfirmasi delete --}}
 
@@ -236,153 +207,21 @@
         }
     }
 </script>
-
-    
 <script>
-    $(document).ready(function () {
-        let deleteUserId;
+    document.addEventListener('DOMContentLoaded', function () {
+        const deleteButtons = document.querySelectorAll('.delete-expense');
+        const deleteForm = document.getElementById('deleteForm');
 
-        // Saat tombol hapus diklik, simpan ID user
-        $('.deleteUser').click(function () {
-            deleteUserId = $(this).data('id');
-            $('#confirmDeleteModal').modal('show');
-        });
-        $('#bataldelete').click(function () {
-            $('#confirmDeleteModal').modal('hide');
-        });
-        $('.close').click(function () {
-            $('#confirmDeleteModal').modal('hide');
-        });
-
-        // Saat tombol konfirmasi di modal diklik
-        $('#confirmDeleteBtn').click(function () {
-            $.ajax({
-                url: "/admin/kelolaUsers/hapususer/" + deleteUserId,
-                type: "POST",
-                data: {
-                    _token: "{{ csrf_token() }}" // Kirim token CSRF
-                },
-                // $('#confirmDeleteModal').modal('hide'), // Tutup modal
-                success: function (response) {
-                    // alert(response.success); // Tampilkan pesan sukses
-                    location.reload(); // Refresh halaman
-                },
-                error: function (xhr) {
-                    alert(xhr.responseJSON.error); // Tampilkan error
-                }
-            });
-        });
-    });
-</script>
-<script>
-    function togglePassword() {
-        var passwordField = document.getElementById("password");
-        var icon = document.getElementById("toggleIcon");
-
-        if (passwordField.type === "password") {
-            passwordField.type = "text";
-            icon.classList.replace('bi-eye', 'bi-eye-slash');
-        } else {
-            passwordField.type = "password";
-            icon.classList.replace('bi-eye-slash', 'bi-eye');
-        }
-    }
-</script>
-<script>
-    function toggleOutletField() {
-        var role = document.getElementById('role').value;
-        var outletField = document.getElementById('outletField');
-
-        if (role === 'kasir') {
-            outletField.style.display = 'block';
-        } else {
-            outletField.style.display = 'none';
-        }
-    }
-
-    // Pastikan input outlet tampil saat modal pertama kali dibuka (karena default-nya kasir)
-    document.addEventListener("DOMContentLoaded", function () {
-        toggleOutletField();
-    });
-
-    function togglePassword() {
-        var passwordField = document.getElementById("password");
-        var toggleIcon = document.getElementById("toggleIcon");
-        
-        if (passwordField.type === "password") {
-            passwordField.type = "text";
-            toggleIcon.classList.replace("bi-eye", "bi-eye-slash");
-        } else {
-            passwordField.type = "password";
-            toggleIcon.classList.replace("bi-eye-slash", "bi-eye");
-        }
-    }
-</script>
-
-<script>
-    document.addEventListener("DOMContentLoaded", function () {
-        document.querySelectorAll('.edit-btn').forEach(button => {
+        deleteButtons.forEach(button => {
             button.addEventListener('click', function () {
-                let id = this.getAttribute('data-id');
-                let nama = this.getAttribute('data-nama');
-                let username = this.getAttribute('data-username');
-                let email = this.getAttribute('data-email');
-                let outlet = this.getAttribute('data-outlet');
-                let role = this.getAttribute('data-role');
-
-                // Isi nilai form dengan data user yang diklik
-                document.getElementById('edit_id').value = id;
-                document.getElementById('edit_nama').value = nama;
-                document.getElementById('edit_username').value = username;
-                document.getElementById('edit_email').value = email;
-
-                // Set role dropdown
-                let roleSelect = document.getElementById('edit_role');
-                roleSelect.value = role;
-
-                // Atur nilai outlet jika bukan admin
-                let outletFieldEdit = document.getElementById('outletFieldEdit');
-                let outletSelect = document.getElementById('edit_id_outlet');
-                
-                if (role === "admin") {
-                    outletFieldEdit.style.display = "none"; // Sembunyikan field outlet
-                } else {
-                    outletFieldEdit.style.display = "block"; // Tampilkan field outlet
-                    outletSelect.value = outlet; // Set outlet sesuai user
-                }
-
-                // Ubah action form untuk update berdasarkan ID user
-                document.querySelector('#editusermodal form').setAttribute('action', `/admin/kelolauser/update/${id}`);
+                const expenseId = this.getAttribute('data-id');
+                deleteForm.setAttribute('action', `/kasir/expenses/${expenseId}`);
             });
         });
-
-        // Event listener untuk toggle field outlet saat role berubah
-        document.getElementById('edit_role').addEventListener('change', function () {
-            let outletFieldEdit = document.getElementById('outletFieldEdit');
-            if (this.value === "admin") {
-                outletFieldEdit.style.display = "none";
-            } else {
-                outletFieldEdit.style.display = "block";
-            }
-        });
     });
-
-    // Fungsi untuk toggle visibility password
-    function togglePasswordEdit() {
-        let passwordInput = document.getElementById("edit_password");
-        let toggleIcon = document.getElementById("toggleIcon");
-
-        if (passwordInput.type === "password") {
-            passwordInput.type = "text";
-            toggleIcon.classList.remove("bi-eye");
-            toggleIcon.classList.add("bi-eye-slash");
-        } else {
-            passwordInput.type = "password";
-            toggleIcon.classList.remove("bi-eye-slash");
-            toggleIcon.classList.add("bi-eye");
-        }
-    }
 </script>
+
+
 
 
 @endsection

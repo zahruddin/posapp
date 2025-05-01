@@ -12,23 +12,31 @@ use Illuminate\Support\Carbon;
 class ExpenseController extends Controller
 {
     //
-    public function index()
+    public function index(Request $request)
     {
         $user = Auth::user();
-    
-        // Ambil data pengeluaran berdasarkan outlet user yang login
-        $expenses = Expense::with('category') // ini ditambahkan
+
+        // Ambil tanggal mulai dan akhir dari input; default ke hari ini
+        $startDate = $request->input('start_date', Carbon::today()->toDateString());
+        $endDate = $request->input('end_date', Carbon::today()->toDateString());
+
+        // Konversi ke format Carbon
+        $startDate = Carbon::parse($startDate)->startOfDay();
+        $endDate = Carbon::parse($endDate)->endOfDay();
+
+        // Ambil data pengeluaran berdasarkan outlet user dan filter tanggal
+        $expenses = Expense::with('category')
                     ->where('outlet_id', $user->id_outlet)
+                    ->whereBetween('datetime', [$startDate, $endDate]) // Tambahkan filter tanggal
                     ->orderBy('datetime', 'desc')
                     ->paginate(10);
 
-    
-        // Ambil kategori pengeluaran milik outlet user yang login
+        // Ambil kategori pengeluaran milik outlet user
         $kategori_pengeluaran = ExpenseCategory::where('outlet_id', $user->id_outlet)->get();
-    
-        return view('kasir.pengeluaran', compact('expenses', 'kategori_pengeluaran'));
+
+        return view('kasir.pengeluaran', compact('expenses', 'kategori_pengeluaran', 'startDate', 'endDate'));
     }
-    
+
     public function store(Request $request)
     {
         // Ambil outlet
@@ -36,7 +44,7 @@ class ExpenseController extends Controller
 
         // Validasi dasar tanpa validasi exists dulu
         $request->validate([
-            'biaya' => 'required|numeric',
+            'biaya' => 'required|numeric|max:10000000',
             'keterangan' => 'nullable|string',
             'expense_category_id' => 'nullable|string', // sementara string dulu karena bisa "tambah-baru"
             'kategori_baru' => 'nullable|string|max:255',
@@ -97,29 +105,29 @@ class ExpenseController extends Controller
     }
 
 
-    public function update(Request $request, $id)
-    {
-        $expense = Expense::findOrFail($id);
+    // public function update(Request $request, $id)
+    // {
+    //     $expense = Expense::findOrFail($id);
 
-        // Pastikan user hanya bisa edit data miliknya dan outletnya
-        if ($expense->user_id !== Auth::id() && $expense->outlet_id !== Auth::user()->outlet_id) {
-            abort(403);
-        }
+    //     // Pastikan user hanya bisa edit data miliknya dan outletnya
+    //     if ($expense->user_id !== Auth::id() && $expense->outlet_id !== Auth::user()->outlet_id) {
+    //         abort(403);
+    //     }
 
-        $request->validate([
-            'biaya' => 'required|numeric',
-            'keterangan' => 'nullable|string',
-            'datetime' => 'required|date',
-        ]);
+    //     $request->validate([
+    //         'biaya' => 'required|numeric',
+    //         'keterangan' => 'nullable|string',
+    //         'datetime' => 'required|date',
+    //     ]);
 
-        $expense->update([
-            'biaya' => $request->biaya,
-            'keterangan' => $request->keterangan,
-            'datetime' => $request->datetime,
-        ]);
+    //     $expense->update([
+    //         'biaya' => $request->biaya,
+    //         'keterangan' => $request->keterangan,
+    //         'datetime' => $request->datetime,
+    //     ]);
 
-        return back()->with('success', 'Pengeluaran berhasil diperbarui.');
-    }
+    //     return back()->with('success', 'Pengeluaran berhasil diperbarui.');
+    // }
 
     public function destroy($id)
     {
