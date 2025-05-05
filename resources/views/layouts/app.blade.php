@@ -441,6 +441,12 @@
                                     <p>Pengeluaran</p>
                                 </a>
                             </li>
+                            <li class="nav-item {{ request()->routeIs('admin.seduh') ? 'active' : '' }}">
+                                <a href="{{ route('admin.seduh', ['id' => $outletId]) }}" class="nav-link {{ request()->routeIs('admin.seduh') ? 'active' : '' }}">
+                                    <i class="nav-icon bi bi-circle-fill"></i>
+                                    <p>Penyeduhan</p>
+                                </a>
+                            </li>
                         @endif
                         {{-- end outlet menu --}}
                     @endif

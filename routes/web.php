@@ -68,7 +68,12 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
     // Profile
     Route::get('/admin/profile', [Admin\ProfileController::class, 'showProfile'])->name('admin.profile'); 
     Route::put('/admin/profile', [Admin\ProfileController::class, 'updateProfile'])->name('admin.profile.update'); 
+    
+    
+    Route::get('/admin/kelolaoutlet/id/{id}/seduh', [Admin\SeduhController::class, 'index'])->name('admin.seduh'); 
     // log
+
+
     Route::get('/admin/log', [Admin\logActivityController::class, 'index'])->name('admin.log'); 
 });
 
