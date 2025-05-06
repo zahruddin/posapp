@@ -37,6 +37,9 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
     Route::get('/admin', function() { return redirect()->route('admin.dashboard'); })->name('redirect.admin.dashboard'); 
     Route::get('/admin/dashboard', [Admin\DashboardController::class, 'showDashboard'])->name('admin.dashboard'); 
     // Outlet
+
+    // Google Sheet manual export route
+    Route::get('/admin/google-sheet/export-transactions', [Admin\GoogleSheetController::class, 'exportTransactions'])->name('admin.googleSheet.exportTransactions');
     Route::get('/admin/kelolaoutlet', [Admin\KelolaOutletController::class, 'showKelolaOutlet'])->name('admin.kelolaOutlet'); 
     Route::get('/admin/kelolaoutlet/id/{id}', [Admin\DashboardController::class, 'showDashboardOutlet'])->name('admin.dashboardOutlet');
     Route::post('/admin/kelolaoutlet/tambahoutlet', [Admin\KelolaOutletController::class, 'tambahOutlet'])->name('admin.tambahOutlet');

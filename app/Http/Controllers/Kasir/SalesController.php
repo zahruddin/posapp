@@ -17,63 +17,64 @@ use Illuminate\Support\Facades\Validator;
 use Illuminate\Pagination\Paginator;
 use Carbon\Carbon;
 
-
 class SalesController extends Controller
 {
-    //
     public function boot()
     {
         Paginator::useBootstrap();
     }
+
     public function showHalamanKasir() 
     {
-        // Ambil user yang sedang login
         $user = auth()->user();
 
-        // Pastikan user memiliki outlet yang terkait
         if (!$user->id_outlet) {
             return redirect()->back()->with('error', 'Anda tidak memiliki outlet terkait.');
         }
 
-        // Ambil hanya produk aktif berdasarkan outlet dari user yang login, urutkan berdasarkan harga terendah
         $products = Product::where('id_outlet', $user->id_outlet)
-                            ->where('status', 'aktif') // Sesuaikan dengan nilai status yang digunakan
-                            // ->orderBy('harga_produk', 'asc') // Urutkan harga dari yang terendah
-                            ->get();
+                         ->where('status', 'aktif')
+                         ->get();
 
-        // Kirim data ke view
         return view('kasir.halamankasir', compact('products'));
     }
-
     
     public function tambahPenjualan(Request $request)
     {
         $cartItems = $request->input('cart');
         $paymentMethod = $request->input('paymentMethod', 'cash');
     
-        if (!$cartItems || count($cartItems) == 0) {
+        if (empty($cartItems)) {
             return response()->json(['message' => 'Keranjang kosong!'], 400);
         }
     
-        // Hitung total harga dan total diskon
-        $totalHarga = 0;
-        $totalDiskon = 0;
-    
-        foreach ($cartItems as $item) {
-            $subtotal = $item['price'] * $item['qty'];
-            $diskon = $item['discount'] ?? 0;
-    
-            $totalHarga += $subtotal;
-            $totalDiskon += $diskon;
-        }
-    
-        $jumlahBayar = $totalHarga - $totalDiskon;
-        $kembalian = 0; 
-    
         try {
             DB::beginTransaction();
+
+            // Validate stock availability first
+            foreach ($cartItems as $item) {
+                $product = Product::find($item['id']);
+                if (!$product) {
+                    throw new \Exception("Produk dengan ID {$item['id']} tidak ditemukan!");
+                }
+                if ($product->stok_produk < $item['qty']) {
+                    throw new \Exception("Stok untuk {$product->nama_produk} tidak mencukupi!");
+                }
+            }
     
-            // Simpan transaksi utama ke tabel sales
+            // Calculate totals
+            $totalHarga = 0;
+            $totalDiskon = 0;
+            foreach ($cartItems as $item) {
+                $subtotal = $item['price'] * $item['qty'];
+                $diskon = $item['discount'] ?? 0;
+                $totalHarga += $subtotal;
+                $totalDiskon += $diskon;
+            }
+    
+            $jumlahBayar = $totalHarga - $totalDiskon;
+    
+            // Create sale record
             $sale = Sale::create([
                 'id_outlet'    => Auth::user()->id_outlet,
                 'id_user'      => Auth::id(),
@@ -84,9 +85,13 @@ class SalesController extends Controller
                 'status_bayar' => 'lunas'
             ]);
     
-            // Simpan detail penjualan dan kurangi stok produk
+            // Create sale details and update stock in bulk
+            $saleDetails = [];
+            $stockUpdates = [];
+            
             foreach ($cartItems as $item) {
-                SalesDetail::create([
+                // Prepare sale detail
+                $saleDetails[] = [
                     'id_sale'      => $sale->id,
                     'id_produk'    => $item['id'],
                     'nama_produk'  => $item['name'],
@@ -95,39 +100,28 @@ class SalesController extends Controller
                     'subtotal'     => $item['price'] * $item['qty'],
                     'diskon'       => $item['discount'] ?? 0,
                     'total'        => ($item['price'] * $item['qty']) - ($item['discount'] ?? 0)
-                ]);
-    
-                // **Kurangi stok produk**
-                $product = Product::find($item['id']);
+                ];
 
-                if (!$product) {
-                    throw new \Exception("Produk dengan ID {$item['id']} tidak ditemukan!");
-                }
-
-                // Debug stok sebelum pengecekan
-                \Log::info("Produk: {$product->nama_produk}, Stok: {$product->stok_produk}, Qty: {$item['qty']}");
-
-                if ($product->stok_produk >= $item['qty']) {
-                    $product->stok_produk -= $item['qty'];
-                    $product->save();
-                } else {
-                    throw new \Exception("Stok untuk {$product->nama_produk} tidak mencukupi!");
-                }
-
-
+                // Update stock using raw query to prevent additional model events
+                DB::table('products')
+                    ->where('id', $item['id'])
+                    ->decrement('stok_produk', $item['qty']);
             }
+
+            // Insert all sale details at once
+            SalesDetail::insert($saleDetails);
     
-            // Simpan pembayaran ke tabel payments
+            // Create payment record
             Payment::create([
                 'id_sale'      => $sale->id,
                 'metode_bayar' => $paymentMethod,
                 'jumlah_bayar' => $jumlahBayar,
-                'kembalian'    => $kembalian,
+                'kembalian'    => 0,
                 'status'       => 'berhasil'
             ]);
     
             DB::commit();
-            session()->flash('success', 'Penjualan berhasil disimpan!');
+
             return response()->json([
                 'message' => 'Penjualan berhasil disimpan!',
                 'total'   => $jumlahBayar
@@ -140,23 +134,22 @@ class SalesController extends Controller
                 'error'   => $e->getMessage()
             ], 500);
         }
-    }    
+    }
+    
     public function getUpdatedProducts()
     {
         try {
             $user = Auth::user();
     
-            // Pastikan user memiliki outlet
             if (!$user->id_outlet) {
                 return response()->json([
                     'message' => 'Anda tidak memiliki outlet terkait.'
                 ], 403);
             }
     
-            // Ambil produk dengan filter status dan urutan harga
             $products = Product::where('id_outlet', $user->id_outlet)
-                ->where('status', 'aktif') // Tambahkan filter status
-                ->orderBy('harga_produk', 'asc') // Tambahkan urutan harga
+                ->where('status', 'aktif')
+                ->orderBy('harga_produk', 'asc')
                 ->get();
     
             return response()->json($products, 200);
