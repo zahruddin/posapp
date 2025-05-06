@@ -295,6 +295,9 @@
 
     // Konfirmasi Pembayaran
     document.getElementById('confirmPayment').addEventListener('click', function() {
+        let confirmButton = this;
+        let originalText = confirmButton.innerHTML;
+
         let paymentMethodEl = document.getElementById('paymentMethod');
         if (!paymentMethodEl) {
             console.error("Error: Elemen metode pembayaran tidak ditemukan.");
@@ -304,7 +307,10 @@
 
         let paymentMethod = paymentMethodEl.value;
 
-        // fetch("{{ route('kasir.sales.addsales') }}", {
+        // Disable button and show loading text
+        confirmButton.disabled = true;
+        confirmButton.innerHTML = 'Sedang diproses...';
+
         fetch("/kasir/sales", {
             method: "POST",
             headers: {
@@ -315,7 +321,6 @@
         })
         .then(response => response.json())
         .then(data => {
-            // console.log("Response dari server:", data);
             localStorage.removeItem('cart');
             let paymentModalEl = document.getElementById('paymentModal');
             if (paymentModalEl) {
@@ -324,16 +329,15 @@
             }
             cart = [];
             location.reload();
-            // alert(data.message);
-            // renderCart();
-
-            // Panggil fungsi untuk refresh stok produk
-            // location.reload(); // Refresh halaman
-
-            // updateProductStock();
         })
-        .catch(error => console.error('Error:', error));
+        .catch(error => {
+            console.error('Error:', error);
+            // Re-enable button and restore original text on error
+            confirmButton.disabled = false;
+            confirmButton.innerHTML = originalText;
+        });
     });
+
     // Fungsi untuk mengambil stok terbaru dan memperbarui tampilan produk
     function updateProductStock() {
         fetch('/api/products') // Pastikan endpoint ini mengembalikan daftar produk terbaru

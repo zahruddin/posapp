@@ -38,7 +38,7 @@ class SalesController extends Controller
         // Ambil hanya produk aktif berdasarkan outlet dari user yang login, urutkan berdasarkan harga terendah
         $products = Product::where('id_outlet', $user->id_outlet)
                             ->where('status', 'aktif') // Sesuaikan dengan nilai status yang digunakan
-                            ->orderBy('harga_produk', 'asc') // Urutkan harga dari yang terendah
+                            // ->orderBy('harga_produk', 'asc') // Urutkan harga dari yang terendah
                             ->get();
 
         // Kirim data ke view
