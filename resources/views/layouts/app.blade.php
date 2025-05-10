@@ -444,7 +444,7 @@
                             <li class="nav-item {{ request()->routeIs('admin.seduh') ? 'active' : '' }}">
                                 <a href="{{ route('admin.seduh', ['id' => $outletId]) }}" class="nav-link {{ request()->routeIs('admin.seduh') ? 'active' : '' }}">
                                     <i class="nav-icon bi bi-circle-fill"></i>
-                                    <p>Penyeduhan</p>
+                                    <p>Laporan Penyeduhan</p>
                                 </a>
                             </li>
                         @endif
@@ -489,6 +489,14 @@
                             <i class="nav-icon bi bi-card-list"></i>
                             <p>
                                 Pengeluaran
+                            </p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="{{ route('kasir.seduh') }}" class="nav-link {{ request()->routeIs('kasir.seduh') ? 'active' : '' }}">
+                            <i class="nav-icon bi bi-card-list"></i>
+                            <p>
+                                Laporan Penyeduhan
                             </p>
                             </a>
                         </li>

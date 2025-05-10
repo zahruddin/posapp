@@ -58,6 +58,11 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
     Route::get('/admin/kelolaoutlet/id/{id}/expense', [Admin\ExpenseController::class, 'index'])->name('admin.expense');
     Route::post('/admin/kelolaoutlet/id/{id_outlet}/expense', [Admin\ExpenseController::class, 'store'])->name('admin.expenses.store');
     Route::post('/admin/expenses/id/{id_outlet}/{id_expense}', [Admin\ExpenseController::class, 'destroy'])->name('admin.expenses.destroy');
+    
+    // Laporan penyeduhan 
+    Route::get('/admin/kelolaoutlet/id/{id}/laporanpenyeduhan', [Admin\SeduhController::class, 'index'])->name('admin.seduh');
+    Route::post('/admin/kelolaoutlet/id/{id}/laporanpenyeduhan', [Admin\SeduhController::class, 'store'])->name('admin.seduh.store');
+    Route::delete('/admin/kelolaoutlet/id/{id}/laporanpenyeduhan/{id_seduh}', [Admin\SeduhController::class, 'destroy'])->name('admin.seduh.destroy');
 
     Route::get('/admin/kelolaUsers', [Admin\KelolaUsersController::class, 'showUsers'])->name('admin.kelolaUsers'); 
     Route::get('/admin/kelolaUsers/edit', [Admin\KelolaUsersController::class, 'showUsers'])->name('admin.editUser'); 
@@ -68,9 +73,6 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
     // Profile
     Route::get('/admin/profile', [Admin\ProfileController::class, 'showProfile'])->name('admin.profile'); 
     Route::put('/admin/profile', [Admin\ProfileController::class, 'updateProfile'])->name('admin.profile.update'); 
-    
-    
-    Route::get('/admin/kelolaoutlet/id/{id}/seduh', [Admin\SeduhController::class, 'index'])->name('admin.seduh'); 
     // log
 
 
@@ -95,6 +97,11 @@ Route::middleware(['auth', 'role:kasir'])->group(function () {
     Route::get('/kasir/expenses', [Kasir\ExpenseController::class, 'index'])->name('kasir.pengeluaran');
     Route::post('/kasir/expenses', [Kasir\ExpenseController::class, 'store'])->name('kasir.expenses.store');
     Route::delete('/kasir/expenses/{id}', [Kasir\ExpenseController::class, 'destroy'])->name('kasir.expenses.destroy');
+
+
+    Route::get('/kasir/laporanseduh', [Kasir\SeduhController::class, 'index'])->name('kasir.seduh');
+    Route::post('/kasir/laporanseduh', [Kasir\SeduhController::class, 'store'])->name('kasir.seduh.store');
+    Route::delete('/kasir/laporanseduh/{id}', [Kasir\SeduhController::class, 'destroy'])->name('kasir.seduh.destroy');
     // Route::put('/kasir/expenses/{id}', [Kasir\ExpenseController::class, 'update'])->name('kasir.expenses.update');
 
 });

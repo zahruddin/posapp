@@ -177,17 +177,14 @@
                     </div>
                 </div>
             </div>  
-            <div class="row">
+            {{-- <div class="row">
               <div class="col-lg-6 col-md-6 col-12">
                 <div class="my-6">
                     <h4 class="text-xl font-semibold text-center mb-2">Grafik Penjualan Harian</h4>
                     <canvas id="lineChart"></canvas>
                 </div>
-
               </div>
-            
-            </div>
-          
+            </div> --}}
           </div>
           <!--end::Container-->
         </div>
@@ -195,7 +192,7 @@
 @endsection
 @section('scripts')
 {{-- <script src="https://cdn.jsdelivr.net/npm/chart.js"></script> --}}
-<script>
+{{-- <script>
     const lineCtx = document.getElementById('lineChart').getContext('2d');
 
     const lineChart = new Chart(lineCtx, {
@@ -227,7 +224,7 @@
             }
         }
     });
-</script>
+</script> --}}
 
 {{-- <script>
     function updateFilter() {
