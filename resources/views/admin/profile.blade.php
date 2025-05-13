@@ -93,7 +93,6 @@
 
 @endsection
 @section('scripts')
-@section('scripts')
 <script>
     function togglePassword(fieldId, iconSpan) {
         const input = document.getElementById(fieldId);
@@ -109,6 +108,4 @@
         }
     }
 </script>
-@endsection
-
 @endsection

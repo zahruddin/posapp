@@ -37,15 +37,22 @@ class KelolaProductsController extends Controller
         try {
             // Cari produk berdasarkan id_outlet dan id
             $product = Product::where('id_outlet', $id_outlet)->where('id', $id_product)->firstOrFail();
-    
-            // Hapus produk
+
+            // Hapus file gambar jika ada
+            if ($product->gambar && file_exists(public_path($product->gambar))) {
+                unlink(public_path($product->gambar));
+            }
+
+            // Hapus produk dari database
             $product->delete();
-            session()->flash('success', 'Product berhasil dihapus!');
+
+            session()->flash('success', 'Produk berhasil dihapus!');
             return response()->json(['success' => 'Produk berhasil dihapus!']);
         } catch (\Exception $e) {
             return response()->json(['error' => 'Terjadi kesalahan: ' . $e->getMessage()], 500);
         }
     }
+
     public function tambahProduk(Request $request, $id_outlet)
     {
         // Validasi input

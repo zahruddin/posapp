@@ -45,4 +45,21 @@ class PenjualanController extends Controller
                     // dd($sales);
         return view('admin.datasales', compact('sales', 'tanggal' ,'outlet', 'startDate', 'endDate', 'outlet'));
     }
+
+    public function destroy($id, $id_sale)
+    {
+        try {
+            $sale = Sale::where('id_outlet', $id)->findOrFail($id_sale);
+            $sale->details()->delete();
+            $sale->delete();
+    
+            session()->flash('success', 'Data penjualan berhasil dihapus!');
+            return response()->json(['success' => 'Data penjualan berhasil dihapus!']);
+        } catch (\Exception $e) {
+            session()->flash('error', 'Gagal menghapus data penjualan: ' . $e->getMessage());
+            return response()->json(['error' => 'Gagal menghapus data penjualan: ' . $e->getMessage()], 500);
+        }
+    }
+    
+
 }

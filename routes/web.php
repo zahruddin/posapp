@@ -53,6 +53,7 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
     Route::put('/admin/kelolaoutlet/products/update/{id_product}', [Admin\KelolaProductsController::class, 'updateProduct'])->name('admin.updateProduct');
     //sales outlet
     Route::get('/admin/kelolaoutlet/id/{id}/penjualan', [Admin\PenjualanController::class, 'dataPenjualan'])->name('admin.datasales');
+    Route::post('/admin/kelolaoutlet/id/{id}/penjualan/{id_sale}', [Admin\PenjualanController::class, 'destroy'])->name('admin.datasales.destroy');
     
     // outlet Users
     Route::get('/admin/kelolaoutlet/id/{id}/kasir', [Admin\KelolaUsersController::class, 'showUsersOutlet'])->name('admin.kasirOutlet');

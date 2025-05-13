@@ -107,11 +107,6 @@
                 </div>
             </div>
         
-        <!-- Feather Icons -->
-        <script>
-            feather.replace();
-        </script>
-        
            
         <!-- /.TABEL card -->
         

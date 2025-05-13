@@ -147,7 +147,7 @@
                             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                         </div>
                         <div class="modal-body">
-                            Apakah Anda yakin ingin menghapus pengguna ini?
+                            Apakah Anda yakin ingin menghapus seluruh data dari outlet ini termasuk riwayat transaksi?
                         </div>
                         <div class="modal-footer">
                             <button type="button" class="btn btn-secondary" id="bataldelete" data-bs-dismiss="modal">Batal</button>

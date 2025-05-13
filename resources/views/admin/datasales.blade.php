@@ -86,6 +86,9 @@
                                     </td>
                                     <td><strong>{{ $sale->user->name }}</strong></td>
                                     <td>
+                                        <button class="btn btn-danger btn-sm deleteUser deleteProduct" data-id="{{ $sale->id }}">
+                                            <i class="bi bi-trash"></i>
+                                        </button>
                                         <button class="btn btn-sm btn-outline-primary btn-detail" type="button" data-bs-toggle="collapse" data-bs-target="#detail-{{ $sale->id }}" aria-expanded="false">
                                             <i data-feather="eye"></i> Detail
                                         </button>
@@ -133,11 +136,6 @@
                 </div>
             </div>
         
-        <!-- Feather Icons -->
-        <script>
-            feather.replace();
-        </script>
-        
            
         <!-- /.TABEL card -->
         
@@ -150,7 +148,7 @@
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
                     <div class="modal-body">
-                        Apakah Anda yakin ingin menghapus pengguna ini?
+                        Apakah Anda yakin ingin menghapus data ini?
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" id="bataldelete" data-bs-dismiss="modal">Batal</button>
@@ -191,20 +189,43 @@
         });
     });
 </script>
-
 <script>
-    document.getElementById('gambarInput').addEventListener('change', function(event) {
-        let input = event.target;
-        let preview = document.getElementById('gambarPreview');
-        
-        if (input.files && input.files[0]) {
-            let reader = new FileReader();
-            reader.onload = function(e) {
-                preview.src = e.target.result;
-                preview.classList.remove('d-none');
-            }
-            reader.readAsDataURL(input.files[0]);
-        }
+    $(document).ready(function () {
+        let deleteSaleId;
+
+        // Saat tombol hapus diklik, simpan ID user
+        $('.deleteUser').click(function () {
+            deleteSaleId = $(this).data('id');
+            $('#confirmDeleteModal').modal('show');
+        });
+        $('#bataldelete').click(function () {
+            $('#confirmDeleteModal').modal('hide');
+        });
+        $('.close').click(function () {
+            $('#confirmDeleteModal').modal('hide');
+        });
+
+        // Saat tombol konfirmasi di modal diklik
+        // let outletId = "{{ Request::segment(4) }}"; 
+        let outletId = "{{ $outlet->id }}";
+        // console.log("ID Outlet:", idout); // Cek apakah id_outlet sudah benar
+        $('#confirmDeleteBtn').click(function () {
+            $.ajax({
+                url: `/admin/kelolaoutlet/id/${outletId}/penjualan/${deleteSaleId}`,
+                type: "POST",
+                data: {
+                    _token: "{{ csrf_token() }}" // Kirim token CSRF
+                },
+                // $('#confirmDeleteModal').modal('hide'), // Tutup modal
+                success: function (response) {
+                    // alert(response.success); // Tampilkan pesan sukses
+                    location.reload(); // Refresh halaman
+                },
+                error: function (xhr) {
+                    alert(xhr.responseJSON.error); // Tampilkan error
+                }
+            });
+        });
     });
 </script>
 @endsection
