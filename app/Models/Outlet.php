@@ -23,4 +23,8 @@ class Outlet extends Model
     {
         return $this->hasMany(Product::class, 'id_outlet');
     }
+    public function user()
+    {
+        return $this->hasMany(User::class, 'id_outlet');
+    }
 }

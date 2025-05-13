@@ -149,7 +149,7 @@
                 <div class="col-lg-4 col-md-6 col-12">
                     <div class="small-box text-bg-danger">
                         <div class="inner">
-                            <h3>Rp {{ number_format($totalSeduh, 1, ',', '.') }}</h3>
+                            <h3>{{ number_format($totalSeduh, 1, ',', '.') }} kg</h3>
                             <p>Total Seduh</p>
                         </div>
                         <svg class="small-box-icon" fill="currentColor" viewBox="0 0 24 24"

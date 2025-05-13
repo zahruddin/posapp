@@ -289,6 +289,13 @@
                         </li> --}}
                         <!--end::Menu Body-->
                         <!--begin::Menu Footer-->
+                        @if(Auth::user()->role == 'admin')
+                        <li class="user-footer">
+                            <a href="{{ route('backup.database') }}" class="btn btn-success"  onclick="return confirm('Yakin ingin backup dan download database?')">
+                                Backup & Download Database
+                            </a>
+                        </li>
+                        @endif
                         <li class="user-footer">
                             @if(Auth::user()->role == 'admin')
                                 <a href="{{ route('admin.profile') }}" class="btn btn-default btn-flat">Profile</a>

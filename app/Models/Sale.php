@@ -38,9 +38,4 @@ class Sale extends Model
         return $this->hasMany(SalesDetail::class, 'id_sale');
     }
 
-    // Relasi ke pembayaran
-    public function payment()
-    {
-        return $this->hasOne(Payment::class, 'id_sale');
-    }
 }

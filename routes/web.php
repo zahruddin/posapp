@@ -32,6 +32,9 @@ Route::middleware('web')->group(function () {
 });
 
 Route::middleware(['auth', 'role:admin'])->group(function () {
+
+    // Backup
+    Route::get('/backup-database', [Admin\BackupController::class, 'backup'])->name('backup.database');
     // home dashboard
     Route::get('/admin', function() { return redirect()->route('admin.dashboard'); })->name('redirect.admin.dashboard'); 
     Route::get('/admin/dashboard', [Admin\DashboardController::class, 'showDashboard'])->name('admin.dashboard'); 

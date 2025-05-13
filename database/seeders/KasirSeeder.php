@@ -18,7 +18,7 @@ class KasirSeeder extends Seeder
         // Menambahkan data kasir
         User::create([
             'name' => 'Kasir 1',
-            'username' => 'kasir1',
+            'username' => 'kasir123',
             'email' => 'kasir1@example.com',
             'password' => Hash::make('password123'),
             'role' => 'kasir',  // Role kasir
