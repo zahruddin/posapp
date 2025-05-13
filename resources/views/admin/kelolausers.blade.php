@@ -49,7 +49,7 @@
                                     <td><span class="badge bg-info">{{ ucfirst($user->role) }}</span></td>
                                     <td>{{ $user->outlet->nama_outlet ?? '-' }}</td>
                                     <td>
-                                        <a href="{{ route('admin.dashboardOutlet', ['id' => $user->id]) }}" class="btn btn-primary btn-sm">
+                                        <a href="{{ route('admin.dashboardKasir', ['id' => $outlet->id, 'id_user' => $user->id, ]) }}" class="btn btn-primary btn-sm">
                                             <i class="bi bi-speedometer2"></i>
                                         </a>
                                         <a href="#" class="btn btn-warning btn-sm edit-btn" 

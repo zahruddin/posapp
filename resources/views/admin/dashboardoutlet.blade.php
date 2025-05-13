@@ -3,10 +3,19 @@
 @section('title', 'Dashboard Outlet | TrackBooth')
 
 @if(isset($outlet) && !empty($outlet->nama_outlet))
-    @section('page', "Dashboard Outlet $outlet->nama_outlet")
-    @push('outlet')
-        / {{ $outlet->nama_outlet }} 
-    @endpush
+    @if(isset($user) && !empty($user->name))
+        @section('page', "Dashboard Outlet $outlet->nama_outlet - User : $user->name")
+        @push('outlet')
+            {{-- / {{ $outlet->nama_outlet }}  --}}
+        @endpush
+
+    @else
+        @section('page', "Dashboard Outlet $outlet->nama_outlet")
+        @push('outlet')
+            / {{ $outlet->nama_outlet }} 
+        @endpush
+    @endif
+
 @else
 @section('page', 'Kelola Produk')
 @endif
@@ -134,7 +143,11 @@
                     <div class="small-box text-bg-danger">
                         <div class="inner">
                             <h3>Rp {{ number_format($totalPengeluaran, 0, ',', '.') }}</h3>
-                            <p>Pengeluaran Outlet</p>
+                            @if (@isset($user))
+                                <p>Pengeluaran User/Kasir</p>
+                            @else
+                                <p>Pengeluaran Outlet</p>
+                            @endif
                         </div>
                         <svg class="small-box-icon" fill="currentColor" viewBox="0 0 24 24"
                             xmlns="http://www.w3.org/2000/svg" aria-hidden="true">

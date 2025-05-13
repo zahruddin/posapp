@@ -57,6 +57,8 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
     
     // outlet Users
     Route::get('/admin/kelolaoutlet/id/{id}/kasir', [Admin\KelolaUsersController::class, 'showUsersOutlet'])->name('admin.kasirOutlet');
+    Route::get('/admin/kelolaoutlet/id/{id}/kasir/dashboard/{id_user}', [Admin\DashboardController::class, 'showDashboardKasir'])->name('admin.dashboardKasir');
+
     // pengeluaran expense
     Route::get('/admin/kelolaoutlet/id/{id}/expense', [Admin\ExpenseController::class, 'index'])->name('admin.expense');
     Route::post('/admin/kelolaoutlet/id/{id_outlet}/expense', [Admin\ExpenseController::class, 'store'])->name('admin.expenses.store');

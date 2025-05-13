@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Outlet;
 use App\Models\Sale;
+use App\Models\User;
 use App\Models\SalesDetail;
 use App\Models\Expense;
 use App\Models\LaporanSeduh;
@@ -152,6 +153,75 @@ class DashboardController extends Controller
             'totalPendapatanCash',
             'totalPendapatanQris',
             'totalPengeluaran'
+        ));
+    }
+
+    public function showDashboardKasir(Request $request, $id, $id_user) {
+        // Ambil data outlet berdasarkan ID
+        $outlet = Outlet::findOrFail($id);
+        $user = User::findOrFail($id_user);
+    
+        // Ambil tanggal mulai dan tanggal akhir dari input, default ke hari ini
+        $startDate = $request->input('start_date', Carbon::today()->toDateString());
+        $endDate = $request->input('end_date', Carbon::today()->toDateString());
+    
+        // Konversi ke format Carbon
+        $startDate = Carbon::parse($startDate)->startOfDay();
+        $endDate = Carbon::parse($endDate)->endOfDay();
+    
+        // Total transaksi dalam rentang waktu yang dipilih
+        $totalTransaksi = Sale::where('id_outlet', $outlet->id)
+            ->where('id_user', $user->id)
+            ->whereBetween('created_at', [$startDate, $endDate])
+            ->count();
+    
+        // Total item terjual dalam rentang waktu yang dipilih
+        $totalItemTerjual = SalesDetail::whereHas('sale', function ($query) use ($user, $outlet, $startDate, $endDate) {
+            $query->where('id_user', $user->id)
+                  ->where('id_outlet', $outlet->id)
+                  ->whereBetween('created_at', [$startDate, $endDate]);
+        })->sum('jumlah');
+        
+    
+        // Total pendapatan dalam rentang waktu yang dipilih
+        $totalPendapatan = Sale::where('id_outlet', $outlet->id)
+            ->where('id_user', $user->id)
+            ->whereBetween('created_at', [$startDate, $endDate])
+            ->sum('total_harga');
+
+        // Total pendapatan oleh user yang login pada tanggal yang dipilih
+        $totalPendapatanCash = Sale::where('id_outlet', $outlet->id)->where('metode_bayar', 'cash')->where('status_bayar', 'lunas')
+        ->where('id_user', $user->id)
+        ->whereBetween('created_at', [$startDate, $endDate])
+        ->sum('total_harga');
+        
+        $totalPendapatanQris = Sale::where('id_outlet', $outlet->id)->where('metode_bayar', 'qris')->where('status_bayar', 'lunas')
+            ->where('id_user', $user->id)
+            ->whereBetween('created_at', [$startDate, $endDate])
+            ->sum('total_harga');
+
+        $totalPengeluaran = Expense::whereBetween('created_at', [$startDate, $endDate])
+        ->where('outlet_id', $outlet->id)
+        ->where('user_id', $user->id)
+        ->sum('biaya');
+
+        $totalSeduh = LaporanSeduh::whereBetween('created_at', [$startDate, $endDate])
+        ->where('id_outlet', $outlet->id)
+        ->where('id_user', $user->id)
+        ->sum('seduh');
+        
+        return view('admin.dashboardoutlet', compact(
+            'totalTransaksi', 
+            'totalItemTerjual', 
+            'totalPendapatan', 
+            'totalSeduh',
+            'startDate', 
+            'endDate', 
+            'outlet',
+            'totalPendapatanCash',
+            'totalPendapatanQris',
+            'totalPengeluaran',
+            'user'
         ));
     }
     
