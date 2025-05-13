@@ -64,5 +64,21 @@ class User extends Authenticatable
     {
         return $this->belongsTo(Outlet::class, 'id_outlet');
     }
+    public function seduh()
+    {
+        return $this->hasMany(LaporanSeduh::class, 'id_user');
+    }
+    public function sale()
+    {
+        return $this->hasMany(Sale::class, 'id_user');
+    }
+    public function activity()
+    {
+        return $this->hasMany(ActivityLog::class, 'user_id');
+    }
+    public function expense()
+    {
+        return $this->hasMany(Expense::class, 'user_id');
+    }
 
 }

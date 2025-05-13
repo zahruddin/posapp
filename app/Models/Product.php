@@ -38,4 +38,9 @@ class Product extends Model
     {
         return $this->belongsTo(Outlet::class, 'id_outlet');
     }
+    public function saleDetail()
+    {
+        return $this->hasMany(SalesDetail::class, 'id_produk');
+    }
+
 }

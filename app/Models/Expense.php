@@ -21,7 +21,14 @@ class Expense extends Model
         });
     }
 
-    protected $fillable = ['outlet_id', 'user_id', 'expense_category_id', 'biaya', 'keterangan', 'datetime'];
+    protected $fillable = [
+        'outlet_id', 
+        'user_id', 
+        'expense_category_id', 
+        'biaya', 
+        'keterangan', 
+        'datetime'
+    ];
     
     public function category()
     {

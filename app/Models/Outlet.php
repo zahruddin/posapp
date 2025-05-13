@@ -27,4 +27,20 @@ class Outlet extends Model
     {
         return $this->hasMany(User::class, 'id_outlet');
     }
+    public function seduh()
+    {
+        return $this->hasMany(LaporanSeduh::class, 'id_outlet');
+    }
+    public function expenseCategory()
+    {
+        return $this->hasMany(ExpenseCategory::class, 'outlet_id');
+    }
+    public function sale()
+    {
+        return $this->hasMany(Sale::class, 'id_outlet');
+    }
+    public function expense()
+    {
+        return $this->hasMany(Expense::class, 'outlet_id');
+    }
 }
