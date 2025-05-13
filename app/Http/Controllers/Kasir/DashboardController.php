@@ -8,6 +8,7 @@ use App\Models\Sale;
 use App\Models\User;
 use App\Models\Product;
 use App\Models\Expense;
+use App\Models\LaporanSeduh;
 use App\Models\SalesDetail;
 use Carbon\Carbon;
 
@@ -56,11 +57,15 @@ class DashboardController extends Controller
         $totalPengeluaran = Expense::where('user_id', $idUser)
         ->whereBetween('datetime', [$startDate, $endDate])
         ->sum('biaya');
+        $totalSeduh = LaporanSeduh::where('id_user', $idUser)
+        ->whereBetween('created_at', [$startDate, $endDate])
+        ->sum('seduh');
 
         return view('kasir.dashboard', compact(
             'totalTransaksi', 
             'totalItemTerjual', 
             'totalPendapatan', 
+            'totalSeduh',
             'totalPendapatanCash',
             'totalPendapatanQris',
             'totalPengeluaran', 

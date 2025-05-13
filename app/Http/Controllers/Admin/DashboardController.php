@@ -8,6 +8,7 @@ use App\Models\Outlet;
 use App\Models\Sale;
 use App\Models\SalesDetail;
 use App\Models\Expense;
+use App\Models\LaporanSeduh;
 use Carbon\Carbon;
 
 
@@ -43,6 +44,7 @@ class DashboardController extends Controller
         // Filter query berdasarkan outlet jika outlet dipilih
         $saleQuery = Sale::whereBetween('created_at', [$startDate, $endDate]);
         $expenseQuery = Expense::whereBetween('created_at', [$startDate, $endDate]);
+        $seduhQuery = LaporanSeduh::whereBetween('created_at', [$startDate, $endDate]);
         $salesDetailQuery = SalesDetail::whereHas('sale', function ($query) use ($startDate, $endDate) {
             $query->whereBetween('created_at', [$startDate, $endDate]);
         });
@@ -50,6 +52,7 @@ class DashboardController extends Controller
         if ($outletId) {
             $saleQuery->where('id_outlet', $outletId);
             $expenseQuery->where('outlet_id', $outletId);
+            $seduhQuery->where('id_outlet', $outletId);
             $salesDetailQuery->whereHas('sale', function ($query) use ($outletId) {
                 $query->where('id_outlet', $outletId);
             });
@@ -59,6 +62,7 @@ class DashboardController extends Controller
         $totalPendapatan = $saleQuery->sum('total_harga');
         $totalItemTerjual = $salesDetailQuery->sum('jumlah');
         $totalPengeluaran = $expenseQuery->sum('biaya');
+        $totalSeduh = $seduhQuery->sum('seduh');
 
         $totalPendapatanCash = $saleQuery->where('metode_bayar', 'cash')->where('status_bayar', 'lunas')->sum('total_harga');
         $totalPendapatanQris = $saleQuery->where('metode_bayar', 'qris')->where('status_bayar', 'lunas')->sum('total_harga');
@@ -80,6 +84,7 @@ class DashboardController extends Controller
             'totalTransaksi',
             'totalItemTerjual',
             'totalPendapatan',
+            'totalSeduh',
             'startDate',
             'endDate',
             'outlet',
@@ -130,6 +135,9 @@ class DashboardController extends Controller
         $totalPengeluaran = Expense::whereBetween('created_at', [$startDate, $endDate])
         ->where('outlet_id', $outlet->id)
         ->sum('biaya');
+        $totalSeduh = LaporanSeduh::whereBetween('created_at', [$startDate, $endDate])
+        ->where('id_outlet', $outlet->id)
+        ->sum('seduh');
         
         
     
@@ -137,6 +145,7 @@ class DashboardController extends Controller
             'totalTransaksi', 
             'totalItemTerjual', 
             'totalPendapatan', 
+            'totalSeduh',
             'startDate', 
             'endDate', 
             'outlet',
