@@ -58,6 +58,7 @@
                                 <th>Outlet</th>
                                 <th>jumlah Seduh</th>
                                 <th>Keterangan</th>
+                                <th>Kasir</th>
                                 <th>Tanggal</th>
                                 <th>Aksi</th>
                             </tr>
@@ -70,6 +71,7 @@
                                     <td><strong>{{ $seduh->outlet->nama_outlet }}</strong></td>
                                     <td><strong>{{ $seduh->seduh }}</strong></td>
                                     <td>{{ $seduh->keterangan ?? '-' }}</td>
+                                    <td><strong>{{ $seduh->user->name }}</strong></td>
                                     <td>{{ \Carbon\Carbon::parse($seduh->created_at)->format('d-m-Y H:i') }}</td>
                                     <td>
                                         <button type="button" class="btn btn-danger btn-sm delete-seduh" 

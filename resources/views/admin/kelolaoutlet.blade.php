@@ -53,6 +53,9 @@
                                     <a href="{{ route('admin.expense', ['id' => $outlet->id]) }}" class="btn btn-outline-success btn-sm">
                                         <i class="bi bi-people"></i><span> Pengeluaran</span>
                                     </a>
+                                    <a href="{{ route('admin.seduh', ['id' => $outlet->id]) }}" class="btn btn-outline-success btn-sm">
+                                        <i class="bi bi-people"></i><span> Penyeduhan</span>
+                                    </a>
                                 </div>
                             </td>
                             <td>

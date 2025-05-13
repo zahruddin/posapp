@@ -30,8 +30,6 @@ class LoginController extends Controller
         // Jika belum login, tampilkan halaman login
         return view('auth.login');
     }
-
-
     // Proses login
     public function login(Request $request)
     {
@@ -56,9 +54,6 @@ class LoginController extends Controller
         // Jika login gagal
         return back()->withErrors(['message' => 'Email/Username atau Password salah!'])->withInput();
     }
-
-
-    
     public function logout(Request $request)
     {
         // Hapus remember_token dari database
@@ -73,8 +68,6 @@ class LoginController extends Controller
         $request->session()->invalidate(); // Hapus sesi
         $request->session()->regenerateToken(); // Regenerasi token CSRF
     
-        return redirect('/login');
+        return redirect()->route('login');
     }
-    
-
 }

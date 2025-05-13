@@ -18,19 +18,18 @@ use Illuminate\Support\Facades\Auth;
 | be assigned to the "web" middleware group. Make something great!
 |
 */
+Route::middleware('web')->group(function () {
 
-Route::get('/', function () {
-    return redirect()->route('login');
+    Route::get('/', function () {
+        return redirect()->route('login');
+    });
+
+    Route::get('/login', [LoginController::class, 'showLoginForm'])->name('login');
+    Route::post('/login', [LoginController::class, 'login']);
+
+    // Gunakan controller logout milikmu
+    Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
 });
-
-Route::get('/login', [LoginController::class, 'showLoginForm'])->name('login'); // Halaman login
-Route::post('/login', [LoginController::class, 'login']); // Proses login
-
-// logout
-Route::post('/logout', function () {
-    Auth::logout();  // Menjalankan proses logout
-    return redirect()->route('login');  // Mengarahkan pengguna ke halaman login setelah logout
-})->name('logout');
 
 Route::middleware(['auth', 'role:admin'])->group(function () {
     // home dashboard

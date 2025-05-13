@@ -130,6 +130,22 @@
                         </a>
                     </div>
                 </div>
+                <div class="col-lg-4 col-md-6 col-12">
+                    <div class="small-box text-bg-danger">
+                        <div class="inner">
+                            <h3>Rp {{ number_format($totalPengeluaran, 0, ',', '.') }}</h3>
+                            <p>Pengeluaran Outlet</p>
+                        </div>
+                        <svg class="small-box-icon" fill="currentColor" viewBox="0 0 24 24"
+                            xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                            <path d="M12 1.5a10.5 10.5 0 100 21 10.5 10.5 0 000-21zm0 19.5a9 9 0 110-18 9 9 0 010 18zm0-13.5a4.5 4.5 0 100 9 4.5 4.5 0 000-9zm0 7.5a3 3 0 110-6 3 3 0 010 6z">
+                            </path>
+                        </svg>
+                        <a href="{{ route('admin.expense', ['id' => $outlet->id]) }}" class="small-box-footer link-light link-underline-opacity-0 link-underline-opacity-50-hover">
+                            More info <i class="bi bi-link-45deg"></i>
+                        </a>
+                    </div>
+                </div>
             </div>
           
           </div>

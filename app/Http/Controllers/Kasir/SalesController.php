@@ -9,7 +9,7 @@ use App\Models\User;
 use App\Models\Product;
 use App\Models\Sale;
 use App\Models\SalesDetail;
-use App\Models\Payment;
+// use App\Models\Payment;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
@@ -116,16 +116,7 @@ class SalesController extends Controller
 
 
             }
-    
-            // Simpan pembayaran ke tabel payments
-            Payment::create([
-                'id_sale'      => $sale->id,
-                'metode_bayar' => $paymentMethod,
-                'jumlah_bayar' => $jumlahBayar,
-                'kembalian'    => $kembalian,
-                'status'       => 'berhasil'
-            ]);
-    
+
             DB::commit();
             session()->flash('success', 'Penjualan berhasil disimpan!');
             return response()->json([
@@ -141,6 +132,95 @@ class SalesController extends Controller
             ], 500);
         }
     }    
+
+    // public function tambahPenjualan(Request $request)
+    // {
+    //     $cartItems = collect($request->input('cart'));
+    //     $paymentMethod = $request->input('paymentMethod', 'cash');
+
+    //     if ($cartItems->isEmpty()) {
+    //         return response()->json(['message' => 'Keranjang kosong!'], 400);
+    //     }
+
+    //     // Ambil semua ID produk dari keranjang, lalu ambil datanya sekaligus
+    //     $productIds = $cartItems->pluck('id')->all();
+    //     $products = Product::whereIn('id', $productIds)->get()->keyBy('id');
+
+    //     $totalHarga = 0;
+    //     $totalDiskon = 0;
+    //     $salesDetails = [];
+
+    //     foreach ($cartItems as $item) {
+    //         $product = $products[$item['id']] ?? null;
+
+    //         if (!$product) {
+    //             return response()->json(['message' => "Produk dengan ID {$item['id']} tidak ditemukan!"], 404);
+    //         }
+
+    //         if ($product->stok_produk < $item['qty']) {
+    //             return response()->json(['message' => "Stok untuk {$product->nama_produk} tidak mencukupi!"], 400);
+    //         }
+
+    //         $qty = $item['qty'];
+    //         $price = $item['price'];
+    //         $discount = $item['discount'] ?? 0;
+    //         $subtotal = $price * $qty;
+    //         $total = $subtotal - $discount;
+
+    //         $totalHarga += $subtotal;
+    //         $totalDiskon += $discount;
+
+    //         $salesDetails[] = [
+    //             'id_produk'    => $product->id,
+    //             'nama_produk'  => $product->nama_produk,
+    //             'harga_produk' => $price,
+    //             'jumlah'       => $qty,
+    //             'subtotal'     => $subtotal,
+    //             'diskon'       => $discount,
+    //             'total'        => $total
+    //         ];
+    //     }
+
+    //     $jumlahBayar = $totalHarga - $totalDiskon;
+
+    //     try {
+    //         DB::beginTransaction();
+
+    //         $sale = Sale::create([
+    //             'id_outlet'    => Auth::user()->id_outlet,
+    //             'id_user'      => Auth::id(),
+    //             'total_harga'  => $totalHarga,
+    //             'total_diskon' => $totalDiskon,
+    //             'total_bayar'  => $jumlahBayar,
+    //             'metode_bayar' => $paymentMethod,
+    //             'status_bayar' => 'lunas'
+    //         ]);
+
+    //         foreach ($salesDetails as $detail) {
+    //             SalesDetail::create(array_merge($detail, ['id_sale' => $sale->id]));
+
+    //             // Update stok produk langsung dari koleksi yang sudah diambil sebelumnya
+    //             $products[$detail['id_produk']]->decrement('stok_produk', $detail['jumlah']);
+    //         }
+
+    //         DB::commit();
+
+    //         session()->flash('success', 'Penjualan berhasil disimpan!');
+    //         return response()->json([
+    //             'message' => 'Penjualan berhasil disimpan!',
+    //             'total'   => $jumlahBayar
+    //         ], 201);
+
+    //     } catch (\Exception $e) {
+    //         DB::rollBack();
+    //         return response()->json([
+    //             'message' => 'Terjadi kesalahan saat menyimpan penjualan!',
+    //             'error'   => $e->getMessage()
+    //         ], 500);
+    //     }
+    // }
+
+    
     public function getUpdatedProducts()
     {
         try {
