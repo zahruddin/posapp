@@ -81,8 +81,7 @@
                                 <div class="col-6 col-md-3 col-lg-3 product-item" data-name="{{ strtolower($product->nama_produk) }}">
                                     <div class="card product-card text-center p-2" data-id="{{ $product->id }}">
                                         @php
-                                            $gambarPath = public_path($product->gambar);
-                                            $gambarURL = file_exists($gambarPath) && !empty($product->gambar) ? asset($product->gambar) : null;
+                                            $gambarURL = !empty($product->gambar) ? asset($product->gambar) : null;
                                         @endphp
                                         @if($gambarURL)
                                             <img src="{{ $gambarURL }}" class="card-img-top" alt="{{ $product->nama_produk }}" style="height: 150px;" loading="lazy">
